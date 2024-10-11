@@ -1,0 +1,265 @@
+/* base.html styles */
+
+[x-cloak] { display: none !important; }
+* {
+    font-family: sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+} body {
+    background-color:#ffffff; 
+} header {
+    background-color: #F2D7B6;
+    background-image: url('/static/blue_bg.webp') !important;
+} header, main, footer, #messageContainer, #breadcrumbContainer {
+    background-color: #F2D7B6;
+    background-image: url('/static/background.webp');
+    width: calc(100% - 1em);
+    max-width: 800px;
+    margin: auto;
+    margin-top: 1em;
+    padding: 0.5em;
+} article, ul, form {
+    margin: auto;
+    margin-top: 0.5rem;
+    max-width: 400px;
+    list-style-type: none;
+} form {
+    display: flex;
+    flex-flow: column;
+    max-width: 500px;
+} form p {
+    display: flex;
+    
+} form p label {
+    font-weight: bold;
+    flex: 1;
+} form p input, form p select {
+    flex: 2;
+    padding: 0.2em;
+    max-width: 300px;
+    margin: auto;
+    width: 100%;
+} form p span.helptext {
+    display: none;
+} h1, h2, h3, h4, h5, h6, p, a, input.button, button {
+    width: 100%;
+    padding: 0.5em;
+} h2 {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 500;
+    font-size: 2.5em;
+} h3 {
+    font-family: "Fredoka", sans-serif;
+    font-weight: normal;
+    font-size: 2em;
+} h4 {
+    font-family: "Maven Pro", sans-serif;
+    font-weight: 500;
+    font-size: 1.3em;
+} p {
+    font-size: 1.1em;
+} ul li a {
+    display: block;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.1em;
+} a:visited {
+    color: purple;
+} a {
+    color: blue;
+} a.active {
+    color: red;
+} a:hover {
+    color: green;
+} a.button, input.button, button {
+    display: block;
+    font-size: 1em;
+    background-color: #ffffff;
+    color: black;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    max-width: 150px;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px outset lightgray;
+    margin: auto;
+    font-family: monospace;
+} a.button.active, input.button.active, button.active {
+    border: 2px inset lightgray;
+}
+
+
+/* Global container styles */
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    max-width: 600px;
+    padding: 0.5em;
+}
+
+.itemContainer {
+    display: block;
+    margin: auto;
+    max-width: 600px;
+    padding: 0.5em;
+}
+
+.scrollableContainer {
+    background-color: #ffffff;
+    margin: auto;
+    max-height: 350px;
+    max-width: 600px;
+    overflow-y: scroll;
+    padding: 0.5em;
+}
+
+.dropdownContainer {
+    display: flex;
+    flex-direction: row;
+    position:relative;
+} .dropdownContainer > .settingsIcon {
+    background-color: #ffffff;
+    border: 2px outset lightgray;
+    fill: blue;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    width: 0.9em;
+} .dropdownContent {
+    align-self: center;
+    background-color: #ffffff;
+    border: 2px solid lightgray;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0px;
+    top: 60px;
+    margin-top: 0;
+} .dropdownContent a.button {
+    width: 150px;
+}
+
+.labelContainer {
+    display: flex;
+    gap: 0.5em;
+} .label {
+    background-color: #ffffff;
+    border: 2px outset lightgray;
+    border-radius: 0.5em;
+    flex-basis: content;
+    font-family: "Maven Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: normal;
+}
+
+
+#appTitle {
+    color: #ffffff;
+    font-family: "Salsa", cursive;
+    font-size: 3em;
+    font-style: normal;
+    font-weight: 400;
+    text-shadow: 2px 2px 5px black;
+}
+
+#appNav {
+    background-color: #F2D7B6;
+    background-image: url('/static/background.webp');
+    max-width: 600px;
+}
+
+#breadcrumbContainer ul {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    max-width: 100%;
+} #breadcrumbContainer ul li {
+    display: flex;
+    max-width: fit-content;
+} #breadcrumbContainer ul li a {
+    padding: 0.25em;
+} #breadcrumbContainer ul li strong {
+    align-items: center;
+    display: flex;
+    padding: 0.25em;
+} #breadcrumbContainer ul li:not(:last-child)::after {
+    content: "\2B9F";
+    padding: 0.25em;
+} @media (min-width: 600px) {
+    #breadcrumbContainer ul {
+        flex-direction: row;
+    } #breadcrumbContainer ul li:not(:last-child)::after {
+        content: "\2B9E";
+    }
+}
+
+footer {
+    text-align: center;
+} .footerItem {
+    padding: 0;
+    white-space: nowrap;
+}
+
+
+.salsa-regular {
+    font-family: "Salsa", cursive;
+    font-weight: 400;
+    font-style: normal;
+}.fredoka-medium {
+    font-family: "Fredoka", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+} .fredoka-light {
+    font-size: 1.4em;
+    font-family: "Fredoka", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: normal;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+} .maven-pro-regular {
+    font-family: "Maven Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: normal;
+    font-style: normal;
+}
+
+.basic-border {
+    border: 2px solid lightgray;
+} hr {
+    border: 1px solid black;
+    margin-bottom: 0.5em;
+}
+@media (max-width: 600px) {
+    form p {
+        flex-flow: column;
+    }
+}
+
+.settingsIcon {
+    content: url('/static/settings.svg');
+    font-size: 40px !important;
+    width: 2em;
+    align-self: center;
+} .viewlistIcon {
+    content: url('/static/view_list.svg');
+    font-size: 40px !important;
+    width: 0.9em;
+    align-self: center;
+} .monitoringIcon {
+    content: url('/static/monitoring.svg');
+    font-size: 40px !important;
+    width: 0.9em;
+    align-self: center;
+}

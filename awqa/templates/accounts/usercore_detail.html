@@ -1,0 +1,88 @@
+{% extends "../base.html" %}
+{% load i18n %}
+
+{% block title %} - {{ object }}'s Profile{% endblock title %}
+
+{% block breadcrumbs %}
+<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+{% if object == user %}
+    <li><strong>My Profile</strong></li>
+{% else %}
+    <li><strong>{{ object }}</strong></li>
+{% endif %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="{% if object == user %}flexContainer{% else %}itemContainer{% endif %}">
+    <h2>{{ object }}</h2>
+    {% if object == user %}
+    <nav class="dropdownContainer" x-data="{ isOpen: false}">
+        <span @click="isOpen = ! isOpen" class="settingsIcon" :class="{'active':isOpen}">
+            settings
+        </span>
+        <ul class="dropdownContent" x-cloak x-show="isOpen" @click.away="isOpen = false">
+            <li><p>General</p></li>
+            <li><a class="button" href="{% url 'update-user-profile' object.pk %}">Update Profile</a></li>
+            <li><a class="button" href="{% url 'delete-user-profile' object.pk %}">Delete Account</a></li>
+            <li><p>Registration</p></li>
+            {% if user.is_authenticated %}
+                {% url 'account_email' as email_url %}
+                {% if email_url %}
+                    <li><a class="button" href="{{ email_url }}">{% trans "Change Email" %}</a></li>
+                {% endif %}
+                {% url 'account_change_password' as change_password_url %}
+                {% if change_password_url %}
+                    <li><a class="button" href="{{ change_password_url }}">{% trans "Change Password" %}</a></li>
+                {% endif %}
+                {% url 'socialaccount_connections' as connections_url %}
+                {% if connections_url %}
+                    <li><a class="button" href="{{ connections_url }}">{% trans "Account Connections" %}</a></li>
+                {% endif %}
+                {% url 'mfa_index' as mfa_url %}
+                {% if mfa_url %}
+                    <li><a class="button" href="{{ mfa_url }}">{% trans "Two-Factor Authentication" %}</a></li>
+                {% endif %}
+                {% url 'usersessions_list' as usersessions_list_url %}
+                {% if usersessions_list_url %}
+                    <li><a class="button" href="{{ usersessions_list_url }}">{% trans "Sessions" %}</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</section>
+
+<section class="itemContainer">
+    <p><b>Date Joined:</b> {{ object.date_joined }}</p>
+    <p><b>Last Login:</b> {{ object.last_login }}</p>
+</section>
+
+<section class="itemContainer labelContainer">
+    {% if object.is_superuser %}<p class="label">Admin</p>{% endif %}
+    {% if object.is_staff %}<p class="label">Staff</p>{% endif %}
+    <p class="label">{% if object.is_active %}Active{% else %}Inactive{% endif %}</p>
+    <p class="label">{% if object.is_private %}Private{% else %}Public{% endif %}</p>
+</section>
+
+<section>
+    <article>
+        <h3>Recent Aquariums ({{ user.aquarium_set.count}})</h3>
+        <ul>
+        {% for object in aquarium_list %}
+            <li><a href="{% url 'aquarium-detail' object.pk %}">{{ object.name }}</a></li>
+        {% endfor %}
+        </ul>
+        <a class="button" href="{% url 'aquarium-list' user.pk %}">View All</a>
+    </article>
+    <article>
+        <h3>Recent Log Entries ({{ user.freshwaterparameterlogentry_set.count }})</h3>
+        <ul>
+        {% for object in log_entry_list %}
+            <li><a href="{% url 'log-entry-detail' object.pk %}">{{ object.date_created }}</a></li>
+        {% endfor %}
+        </ul>
+        <a class="button" href="{% url 'log-entry-list' object.pk %}">View All</a>
+    </article>
+</section>
+
+{% endblock content %}

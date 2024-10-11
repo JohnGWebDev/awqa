@@ -1,0 +1,26 @@
+{% extends "../base.html" %}
+
+{% block title %} - {% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Aquarium List{% endblock title %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    {% if list_owner %}
+        <li><a href="{% url 'user-profile' list_owner.pk %}">{{ list_owner }}</a></li>
+    {% endif %}
+    <li><strong>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Aquarium List</strong></li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Aquarium List</h2>
+    <ul>
+        {% for aquarium in object_list %}
+            <li><a href="{% url 'aquarium-detail' aquarium.pk %}">{{ aquarium.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% if not list_owner %}
+        <a class="button" href="{% url 'create-aquarium' %}">Add Aquarium</a>
+    {% endif %}
+</section>
+
+{% endblock content %}

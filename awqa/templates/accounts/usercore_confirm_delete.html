@@ -1,0 +1,23 @@
+{% extends "../base.html" %}
+
+{% block title %} - Delete Account{% endblock title %}
+
+{% block breadcrumbs %}
+<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+<li><a href="{% url 'user-profile' user.pk %}">My Profile</a></li>
+<li><strong>Delete Account</strong></li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>Delete Account?</h2>
+    <form id="aquariumForm" method="post">{% csrf_token %}
+        <p>Are you sure you want to delete your account?</p>
+        {{ form.as_p }}
+    </form>
+    <article class="flexContainer">
+        <input form="aquariumForm" class="button" type="submit" value="Confirm">
+        <a class="button" href="{% url 'user-profile' user.id %}">Cancel</a>
+    </article>
+</section>
+{% endblock content %}

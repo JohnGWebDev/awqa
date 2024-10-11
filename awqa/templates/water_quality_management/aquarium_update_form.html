@@ -1,0 +1,23 @@
+{% extends "../base.html" %}
+
+{% block title %}Update Aquarium{% endblock title %}
+
+{% block breadcrumbs %}
+<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+<li><a href="{% url 'aquarium-list' object.user.pk %}">My Aquaruim List</a></li>
+<li><a href="{% url 'aquarium-detail' object.id %}">{{ object.name }}</a></li>
+<li><strong>Update Aquarium</strong></li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>Update Aquarium</h2>
+    <form id="aquariumForm" method="post">{% csrf_token %}
+        {{ form.as_p }}
+    </form>
+    <div class="flexContainer">
+        <input form="aquariumForm" class="button" type="submit" value="Save">
+        <a class="button" href="{% url 'aquarium-detail' object.id %}">Cancel</a>
+    </div>
+</section>
+{% endblock content %}

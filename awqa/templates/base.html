@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load i18n %}
+{% load static %}
+{% load socialaccount %}
+<html>
+    <head>
+        <title>AWQA{% block title %}{% endblock title %}</title>
+      
+        <!-- Meta -->
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        {% block meta %}{% endblock meta %}
+
+        <!-- CSS -->
+        <link rel='stylesheet' type='text/css' href="{% static 'base.css' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link defer href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+        <link defer href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
+        <link defer href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
+        {% block css %}{% endblock css %}
+
+        <!-- JS -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MET29XJHWQ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MET29XJHWQ');
+        </script>
+        {% block js %}{% endblock js %}
+    </head>
+    <body>
+        {% block body %}
+        <!-- If no user is logged in, we want the menu to be open by default and only display authentication links. -->
+        <header {% if user.is_authenticated %}x-data="{open:false}"{% else %}x-data="{open:true}"{% endif %}>
+            <section class="flexContainer">
+                <h1 id="appTitle">AWQA</h1>
+                <button :class="{'active': open}" x-text="open ? 'Close Menu': 'Open Menu'" @click="open = ! open"></button>
+            </section>
+            <nav class="itemContainer">
+                <ul id="appNav" x-cloak x-show="open" @click.outside="open = false">
+                    {% if user.is_authenticated %}
+                        {% url 'dashboard' as dashboard %}
+                        {% if dashboard %}
+                            <li><a href="{{ dashboard }}">{% trans "Dashboard" %}</a></li>
+                        {% endif %}
+                        {% url 'user-profile' user.id as profile %}
+                        {% if profile %}
+                            <li><a href="{{ profile }}">{% trans "Profile" %}</a></li>
+                        {% endif %}
+                        {% url 'account_logout' as logout_url %}
+                        {% if logout_url %}
+                            <li><a href="{{ logout_url }}">{% trans "Sign Out" %}</a></li>
+                        {% endif %}
+                    {% else %}
+                        {% url 'index' as index %}
+                        {% if index %}
+                            <li><a href="{{ index }}">{% trans "Home" %}</a></li>
+                        {% endif %}
+                        {% url 'account_login' as login_url %}
+                        {% if login_url %}
+                            <li><a href="{{ login_url }}">{% trans "Sign In" %}</a></li>
+                        {% endif %}
+                        {% url 'account_signup' as signup_url %}
+                        {% if signup_url %}
+                            <li><a href="{{ signup_url }}">{% trans "Sign Up" %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+
+        {% if messages %}
+        <section id="messageContainer">
+            <article class="itemContainer">
+                <strong>{% trans "Messages:" %}</strong>
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+        </section>
+        {% endif %}
+
+        <nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0">
+            <ul x-ref="breadcrumbs">
+                {% block breadcrumbs %}
+                {% endblock breadcrumbs %}
+            </ul>
+        </nav>
+
+        <main>
+            {% block content %}
+            {% endblock content %}
+        </main>
+
+        {% endblock body %}
+
+        {% block extra_body %}
+        {% endblock extra_body %}
+
+        <footer>
+            <article>
+                <h4>We Value Your Feedback!</h4>
+                <p>
+                    Whether it's suggestions, bug reports, or general comments, your feedback helps us grow.
+                </p>
+                <p>
+                    <b>Please share your thoughts with us:</b>
+                    <a href="mailto:">awqanalytics@gmail.com</a>
+                </p>
+                <br>
+            </article>
+                
+            <hr>
+            <span class="footerItem">Copyright &bull; &copy; {% now "Y" %} | </span>
+            {% url "privacy-policy" as privacy_policy %}
+            {% if privacy_policy %}
+                <a class="footerItem" href="{{ privacy_policy }}">Privacy Policy</a>
+            {% endif %}
+        </footer>
+
+        {% block footer_js %}
+        {% endblock footer_js %}
+    </body> 
+</html>

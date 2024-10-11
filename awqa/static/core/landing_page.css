@@ -1,0 +1,17 @@
+/* Landing page styles */
+
+#keyFeatures {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 1em;
+    max-width: 550px;
+    background-color: #ffffff;
+    border: 2px solid lightgray;
+} #keyFeatures ul {
+    display: flex;
+    max-width: 550px;
+    flex-wrap: wrap;
+    row-gap: 2em;
+} #keyFeatures ul li {
+    width: 100%;
+}

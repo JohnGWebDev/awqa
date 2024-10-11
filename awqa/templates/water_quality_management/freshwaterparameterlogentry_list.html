@@ -1,0 +1,23 @@
+{% extends "../base.html" %}
+
+{% block title %} - {% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List{% endblock title %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    {% if list_owner %}
+        <li><a href="{% url 'user-profile' list_owner.pk %}">{{ list_owner }}</a></li>
+    {% endif %}
+    <li><strong>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</strong></li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</h2>
+    <ul>
+        {% for log_entry in object_list %}
+            <li><a href="{% url 'log-entry-detail' log_entry.pk %}">{{ log_entry.date_created }}</a></li>
+        {% endfor %}
+    </ul>
+</section>
+
+{% endblock content %}

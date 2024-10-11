@@ -1,0 +1,27 @@
+{% extends "../base.html" %}
+
+{% block title %} - Dashboard{% endblock title %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>Dashboard</h2>
+    <article>
+        <h3>Recent Aquariums ({{ user.aquarium_set.count}})</h3>
+        <ul>
+        {% for object in aquarium_list %}
+            <li><a href="{% url 'aquarium-detail' object.pk %}">{{ object.name }}</a></li>
+        {% endfor %}
+        </ul>
+        <a class="button" href="{% url 'aquarium-list' user.pk %}">View All</a>
+    </article>
+    <article>
+        <h3>Recent Log Entries ({{ user.freshwaterparameterlogentry_set.count }})</h3>
+        <ul>
+        {% for object in log_entry_list %}
+            <li><a href="{% url 'log-entry-detail' object.pk %}">{{ object.date_created }}</a></li>
+        {% endfor %}
+        </ul>
+        <a class="button" href="{% url 'log-entry-list' user.pk %}">View All</a>
+    </article>
+</section>
+{% endblock content %}

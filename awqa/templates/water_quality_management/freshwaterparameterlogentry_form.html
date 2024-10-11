@@ -1,0 +1,24 @@
+{% extends "../base.html" %}
+
+{% block title %} - Add Log Entry{% endblock title %}
+
+{% block breadcrumbs %}
+<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+<li><a href="{% url 'aquarium-list' aquarium.user.pk %}">My Aquaruim List</a></li>
+<li><a href="{% url 'aquarium-detail' aquarium.id %}">{{ aquarium.name }}</a></li>
+<li><strong>Add Log Entry</strong></li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="itemContainer">
+    <h2>Add Log Entry</h2>
+    <p>Aquarium: <b>{{ aquarium.name }}</b></p>
+    <form id="aquariumForm" method="post">{% csrf_token %}
+        {{ form.as_p }}
+    </form>
+    <div class="flexContainer">
+        <input form="aquariumForm" class="button" type="submit" value="Save">
+        <a class="button" href="{% url 'aquarium-detail' aquarium.id %}">Cancel</a>
+    </div>
+</section>
+{% endblock content %}
