@@ -28,13 +28,11 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 SITE_ID = 2
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('DEBUG') == 'True':
-    DEBUG = True
-    ALLOWED_HOSTS = ['*']
-else:
-    DEBUG = False
 
-ALLOWED_HOSTS = ['awqanalytics.com']
+DEBUG = True
+
+
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -113,23 +111,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-if os.getenv('DEBUG') == 'False':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': str(os.getenv('DB_NAME')),
-            'USER': str(os.getenv('DB_USER')),
-            'PASSWORD': str(os.getenv('DB_PASS')),
-            'HOST': str(os.getenv('DB_HOST')),
-        }
-    }
+}
 
 
 # Password validation

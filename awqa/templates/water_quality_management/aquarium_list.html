@@ -19,7 +19,9 @@
         {% endfor %}
     </ul>
     {% if not list_owner %}
-        <a class="button" href="{% url 'create-aquarium' %}">Add Aquarium</a>
+        {% if user.can_create_aquarium == True %}
+            <a class="button" href="{% url 'create-aquarium' %}">Add Aquarium</a>
+        {% endif %}
     {% endif %}
 </section>
 

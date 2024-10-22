@@ -21,10 +21,19 @@ User = get_user_model()
 # user will be the owner, and the date fields will be automatically populated.
 class AquariumCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Aquarium
-    fields = ('name', 'is_private', 'is_active',)
+    fields = ('name', 'is_private',)
     success_message = "New aquarium was added successfully!"
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.aquarium_set.count() >= self.request.user.max_aquariums:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+        
+    
+
     def form_valid(self, form):
+        if self.request.user.can_create_aquarium == False:
+            raise PermissionDenied
         form.instance.user = self.request.user
         return super(AquariumCreateView, self).form_valid(form)
 
@@ -83,7 +92,7 @@ class AquariumListView(LoginRequiredMixin, ListView):
 # The last_updated field will be populated automatically.
 class AquariumUpdateView(UpdateView, SuccessMessageMixin, PrivatePageMixin):
     model = Aquarium
-    fields = ('name', 'is_private', 'is_active',)
+    fields = ('name', 'is_private',)
     template_name = 'water_quality_management/aquarium_update_form.html'
     success_message = "Your aquarium was updated successfully!"
 
@@ -91,7 +100,7 @@ class AquariumUpdateView(UpdateView, SuccessMessageMixin, PrivatePageMixin):
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
 class AquariumDeleteView(DeleteView, SuccessMessageMixin, PrivatePageMixin):
     model = Aquarium
-    success_url = reverse_lazy("aquarium-list")
+    success_url = reverse_lazy('dashboard')
     success_message = "Your aquarium was deleted successfully!"
 
 
@@ -127,7 +136,7 @@ class WaterQualityLogEntryDetailView(DetailView, OptionallyPrivateObjectMixin):
 # The last_updated field will be populated automatically.
 class WaterQualityLogEntryUpdateView(UpdateView, SuccessMessageMixin, PrivatePageMixin):
     model = FreshWaterParameterLogEntry
-    fields = ('is_private', 'ph', 'high_range_ph', 'ammonia', 'nitrite', 'nitrate', 'is_active',)
+    fields = ('is_private', 'ph', 'high_range_ph', 'ammonia', 'nitrite', 'nitrate',)
     template_name = 'water_quality_management/freshwaterparameterlogentry_update_form.html'
     success_message = "Your log entry was updated successfully!"
 

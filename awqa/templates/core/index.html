@@ -1,9 +1,49 @@
 {% extends "../base.html" %}
 {% load static %}
 
+{% block title %} - Aquarium Water Quality Analytics{% endblock title %}
+
+{% block meta %}
+<meta name="description" content="Test your water, log the results, and analyze trends to maintain a thriving ecosystem.">
+{% endblock meta %}
+
 {% block css %}
 <link rel='stylesheet' type='text/css' href="{% static 'core/landing_page.css' %}">
 {% endblock css %}
+
+{% block js %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AWQA",
+    "url": "https://www.awqa.com",
+    "applicationCategory": "Productivity",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript enabled and modern browser support.",
+    "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD",
+    "eligibleRegion": {
+        "@type": "Country",
+        "name": "United States"
+    }
+    },
+    "description": "Test your water, log the results, and analyze trends to maintain a thriving ecosystem.",
+    "logo": "https://www.awqa.com/static/logo.webp",
+    "author": {
+    "@type": "Organization",
+    "name": "AWQA"
+    },
+    "potentialAction": {
+    "@type": "ViewAction",
+    "target": "https://www.awqa.com/accounts/signup/",
+    "name": "Sign Up for Free"
+    }
+}
+</script>
+{% endblock js %}
 
 {% block content %}
 <section style="text-align: center;">
