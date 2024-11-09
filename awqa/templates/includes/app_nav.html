@@ -1,0 +1,28 @@
+{% load i18n %}
+{% if user.is_authenticated %}
+    {% url 'dashboard' as dashboard %}
+    {% if dashboard %}
+        <li><a hx-get="{{ dashboard }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Dashboard" %}</a></li>
+    {% endif %}
+    {% url 'accounts:user-profile' user.id as profile %}
+    {% if profile %}
+        <li><a hx-get="{{ profile }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Profile" %}</a></li>
+    {% endif %}
+    {% url 'account_logout' as logout_url %}
+    {% if logout_url %}
+        <li><a hx-get="{{ logout_url }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Sign Out" %}</a></li>
+    {% endif %}
+{% else %}
+    {% url 'index' as index %}
+    {% if index %}
+        <li><a href="{{ index }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Home" %}</a></li>
+    {% endif %}
+    {% url 'account_login' as login_url %}
+    {% if login_url %}
+        <li><a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Sign In" %}</a></li>
+    {% endif %}
+    {% url 'account_signup' as signup_url %}
+    {% if signup_url %}
+        <li><a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Sign Up" %}</a></li>
+    {% endif %}
+{% endif %}

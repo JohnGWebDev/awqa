@@ -1,0 +1,7 @@
+<h3>Recent Log Entries| {{ object_list|length }}</h3>
+<ul>
+{% for object in object_list %}
+    <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ object.date_created }}</a></li>
+{% endfor %}
+</ul>
+<a class="button" hx-get="{% url 'water_quality_management:log-entry-list' user.pk %}" hx-target="#pageContainer" hx-push-url="true">View All</a>

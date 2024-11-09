@@ -1,20 +1,43 @@
 {% extends "../base.html" %}
-{% load static %}
 
-{% block title %} - Aquarium: {{ object.name}}{% endblock title %}
+{% load static %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Aquarium: {{ object.name }}</title>
+{% else %}
+{% block title %}Aquarium: {{ object.name }}{% endblock title %}
+{% endif %}
 
 {% block css %}
 <link rel='stylesheet' type='text/css' href="{% static 'water_quality_management/aquarium_detail.css' %}">
 {% endblock css %}
 
 {% block js %}
-<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+
 {% endblock js %}
 
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'aquarium-list' object.user.pk %}">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
-<li><strong>{{ object.name }}</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target="#pageContainer" hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
+        <li><strong>{{ object.name }}</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
@@ -25,8 +48,8 @@
         <span @click="isOpen = ! isOpen" class="settingsIcon" :class="{'active':isOpen}">settings</span>
         <ul class="dropdownContent" x-cloak x-show="isOpen" @click.away="isOpen = false">
             <li><p>General</p></li>
-            <li><a class="button" href="{% url 'update-aquarium' object.pk %}">Update Aquarium</a></li>
-            <li><a class="button" href="{% url 'delete-aquarium' object.pk %}">Delete Aquarium</a></li>
+            <li><a class="button" hx-get="{% url 'water_quality_management:update-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Aquarium</a></li>
+            <li><a class="button" hx-get="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Aquarium</a></li>
         </ul>
     </nav>
     {% endif %}
@@ -38,14 +61,14 @@
 
 <section id="tabsContainer" x-data="{ tab: 'Log' }">
     <nav>
-        <a :class="{ 'active': tab === 'Log' }" @click.prevent="tab = 'Log'" href="#"><span class="viewlistIcon">view_list</span></a>
-        <a :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'" href="#" ><span class="monitoringIcon">monitoring</span></a>
+        <a :class="{ 'active': tab === 'Log' }" @click.prevent="tab = 'Log'"><span class="viewlistIcon">view_list</span></a>
+        <a hx-get="{% url 'water_quality_management:render-chart' object.pk 30 %}" hx-target="#aquariumChart" :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'"><span class="monitoringIcon">monitoring</span></a>
     </nav>
     <div class="displayTab" x-cloak x-show="tab === 'Log'">
         <article class="{% if object.user == user %}flexContainer{% else %}itemContainer{% endif %}">
             <h3>Water Quality Log</h3>
             {% if object.user == user %}
-                <a class="button" href="{% url 'add-log-entry' object.pk %}">Add Log Entry</a>
+                <a class="button" hx-get="{% url 'water_quality_management:add-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Add Log Entry</a>
             {% endif %}
         </article>
         {% if object.freshwaterparameterlogentry_set.all %}
@@ -56,10 +79,10 @@
             </tr>
             {% for entry in object.freshwaterparameterlogentry_set.all %}
                 <tr>
-                    {% url 'log-entry-detail' entry.pk as log_entry_detail_url %}
+                    {% url 'water_quality_management:log-entry-detail' entry.pk as log_entry_detail_url %}
                     {% if log_entry_detail_url %}
-                        <td><a href="{{ log_entry_detail_url }}">{{ entry.date_created|date:"D M d, Y" }}</a></td>
-                        <td><a href="{{ log_entry_detail_url }}">{{ entry.date_created|time:"g:i A" }}</a></td>
+                        <td><a hx-get="{{ log_entry_detail_url }}" hx-target=#pageContainer hx-push-url="true">{{ entry.date_created|date:"D M d, Y" }}</a></td>
+                        <td><a hx-get="{{ log_entry_detail_url }}" hx-target=#pageContainer hx-push-url="true">{{ entry.date_created|time:"g:i A" }}</a></td>
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -74,7 +97,6 @@
 </section>
 {% endblock content %}
 
-{% block footer_js %}
-{{data|json_script:"chart-data"}}
-<script src="{% static 'water_quality_management/aquarium_chart.js' %}"></script>
-{% endblock footer_js %}
+{% endpartialdef %}
+
+{% partial page-partial %}

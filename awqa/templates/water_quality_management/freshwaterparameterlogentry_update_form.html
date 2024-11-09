@@ -1,25 +1,50 @@
 {% extends "../base.html" %}
 
-{% block title %} - Update Log Entry{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Update Log Entry</title>
+{% else %}
+{% block title %}Update Log Entry{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
 
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'aquarium-list' object.user.pk %}">My Aquaruim List</a></li>
-<li><a href="{% url 'aquarium-detail' object.aquarium.id %}">{{ object.aquarium.name }}</a></li>
-<li><a href="{% url 'log-entry-detail' object.id %}">Log Entry: {{ object.date_created|date:'d/m/y' }}</a></li>
-<li><strong>Update Log Entry</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquaruim List</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.aquarium.id %}" hx-target=#pageContainer hx-push-url="true">{{ object.aquarium.name }}</a></li>
+        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.id %}" hx-target=#pageContainer hx-push-url="true">Log Entry: {{ object.date_created|date:'d/m/y' }}</a></li>
+        <li><strong>Update Log Entry</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>Update Log Entry</h2>
-    <p>Aquarium: <b>{{ object.aquarium.name }}</b></p>
-    <form id="aquariumForm" method="post">{% csrf_token %}
-        {{ form.as_p }}
-    </form>
-    <div class="flexContainer">
-        <input form="aquariumForm" class="button" type="submit" value="Save">
-        <a class="button" href="{% url 'log-entry-detail' object.pk %}">Cancel</a>
-    </div>
-</section>
+<h2>Update Log Entry</h2>
+<p>Aquarium: <b>{{ object.aquarium.name }}</b></p>
+<form id="aquariumForm" hx-post="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{% csrf_token %}
+    {{ form.as_p }}
+</form>
+<div class="flexContainer">
+    <input form="aquariumForm" class="button" type="submit" value="Save">
+    <a class="button" hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+</div>
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

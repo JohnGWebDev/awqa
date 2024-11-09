@@ -1,33 +1,58 @@
 {% extends "../base.html" %}
 
-{% block title %} - Log Entry: {{ object.date_created|date:'d/m/y' }}{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Log Entry: {{ object.date_created|date:'d/m/y' }}</title>
+{% else %}
+{% block title %}Log Entry: {{ object.date_created|date:'d/m/y' }}{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
 
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'aquarium-list' object.user.pk %}">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
-<li><a href="{% url 'aquarium-detail' object.aquarium.id %}">{{ object.aquarium.name }}</a></li>
-<li><strong>Log Entry: {{ object.date_created|date:'d/m/y' }}</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.aquarium.id %}" hx-target=#pageContainer hx-push-url="true">{{ object.aquarium.name }}</a></li>
+        <li><strong>Log Entry: {{ object.date_created|date:'d/m/y' }}</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>{{ object.date_created }}</h2>
-    <ul>
-        <li>Owner: <b>{{ object.user }}</b></li>
-        <li>pH: <b>{{ object.ph }}</b></li>
-        <li>High Range pH: <b>{{ object.high_range_ph }}</b></li>
-        <li>Ammonia: <b>{{ object.ammonia }}</b></li>
-        <li>Nitrite: <b>{{ object.nitrite }}</b></li>
-        <li>Nitrate: <b>{{ object.nitrate }}</b></li>
-        {% if object.last_updated != object.date_created %}
-            <li>Last Updated: <b>{{ object.last_updated }}</b></li>
-        {% endif %}
-    </ul>
-    {% if object.aquarium.user == user %}
-    <div class="flexContainer">
-        <a class="button" href="{% url 'update-log-entry' object.pk %}">Update Log Entry</a>
-        <a class="button" href="{% url 'delete-log-entry' object.pk %}">Delete Entry</a>
-    </div>
+<h2>{{ object.date_created }}</h2>
+<ul>
+    <li>Owner: <b>{{ object.user }}</b></li>
+    <li>pH: <b>{{ object.ph }}</b></li>
+    <li>High Range pH: <b>{{ object.high_range_ph }}</b></li>
+    <li>Ammonia: <b>{{ object.ammonia }}</b></li>
+    <li>Nitrite: <b>{{ object.nitrite }}</b></li>
+    <li>Nitrate: <b>{{ object.nitrate }}</b></li>
+    {% if object.last_updated != object.date_created %}
+        <li>Last Updated: <b>{{ object.last_updated }}</b></li>
     {% endif %}
-</section>
+</ul>
+{% if object.aquarium.user == user %}
+<div class="flexContainer">
+    <a class="button" hx-get="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Log Entry</a>
+    <a class="button" hx-get="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Entry</a>
+</div>
+{% endif %}
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

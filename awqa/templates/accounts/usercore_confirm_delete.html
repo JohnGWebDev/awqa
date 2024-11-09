@@ -1,23 +1,47 @@
 {% extends "../base.html" %}
 
-{% block title %} - Delete Account{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Delete Account</title>
+{% else %}
+{% block title %}Delete Account{% endblock title %}
+{% endif %}
 
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'user-profile' user.pk %}">My Profile</a></li>
-<li><strong>Delete Account</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target="#pageContainer" hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'accounts:user-profile' user.pk %}" hx-target="#pageContainer" hx-push-url="true">My Profile</a></li>
+        <li><strong>Delete Account</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
 <section class="itemContainer">
     <h2>Delete Account?</h2>
-    <form id="aquariumForm" method="post">{% csrf_token %}
+    <form id="aquariumForm" hx-post="{% url 'accounts:delete-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">
+        {% csrf_token %}
         <p>Are you sure you want to delete your account?</p>
         {{ form.as_p }}
     </form>
     <article class="flexContainer">
         <input form="aquariumForm" class="button" type="submit" value="Confirm">
-        <a class="button" href="{% url 'user-profile' user.id %}">Cancel</a>
+        <a class="button" href="{% url 'accounts:user-profile' user.id %}">Cancel</a>
     </article>
 </section>
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

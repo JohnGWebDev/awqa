@@ -1,23 +1,47 @@
 {% extends "../base.html" %}
 
-{% block title %} - {% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| {% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</title>
+{% else %}
+{% block title %}{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    {% if list_owner %}
-        <li><a href="{% url 'user-profile' list_owner.pk %}">{{ list_owner }}</a></li>
-    {% endif %}
-    <li><strong>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
+        {% if list_owner %}
+            <li><a hx-get="{% url 'user-profile' list_owner.pk %}" hx-target=#pageContainer hx-push-url="true">{{ list_owner }}</a></li>
+        {% endif %}
+        <li><strong>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</h2>
-    <ul>
-        {% for log_entry in object_list %}
-            <li><a href="{% url 'log-entry-detail' log_entry.pk %}">{{ log_entry.date_created }}</a></li>
-        {% endfor %}
-    </ul>
-</section>
-
+<h2>{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</h2>
+<ul>
+    {% for log_entry in object_list %}
+        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' log_entry.pk %}" hx-target=#pageContainer hx-push-url="true">{{ log_entry.date_created }}</a></li>
+    {% endfor %}
+</ul>
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

@@ -1,27 +1,50 @@
 {% extends "../base.html" %}
 
-{% block title %} - Dashboard{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<ul id="appNav" hx-swap-oob="true">{% include "includes/app_nav.html" %}</ul>
+{% endif %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Dashboard</title>
+{% else %}
+{% block title %}Dashboard{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
+{% block breadcrumbs %}
+{% if request.htmx %}
+
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak>
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
+{% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>Dashboard</h2>
+<h2>Dashboard</h2>
+<section class="widgetContainer">
     <article>
-        <h3>Recent Aquariums ({{ user.aquarium_set.count}})</h3>
-        <ul>
-        {% for object in aquarium_list %}
-            <li><a href="{% url 'aquarium-detail' object.pk %}">{{ object.name }}</a></li>
-        {% endfor %}
-        </ul>
-        <a class="button" href="{% url 'aquarium-list' user.pk %}">View All</a>
+        {% include "water_quality_management/includes/recent_aquariums_list.html" with object_list=aquarium_list %}
     </article>
     <article>
-        <h3>Recent Log Entries ({{ user.freshwaterparameterlogentry_set.count }})</h3>
-        <ul>
-        {% for object in log_entry_list %}
-            <li><a href="{% url 'log-entry-detail' object.pk %}">{{ object.date_created }}</a></li>
-        {% endfor %}
-        </ul>
-        <a class="button" href="{% url 'log-entry-list' user.pk %}">View All</a>
+        {% include "water_quality_management/includes/recent_log_entries_list.html" with object_list=log_entry_list %}
     </article>
 </section>
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

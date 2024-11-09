@@ -1,6 +1,24 @@
 {% extends "base.html" %}
-
-{% block title %} - 500 Server Error{% endblock title %}
+{% load partials %}
+{% partialdef page-partial %}
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| 500 Server Error</title>
+{% else %}
+{% block title %}500 Server Error{% endblock title %}
+{% endif %}
+{% block breadcrumbs %}
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
+{% endblock breadcrumbs %}
 
 {% block content %}
 <section>
@@ -8,3 +26,5 @@
     <p>It looks like there has been an internal error.</p>
 </section>
 {% endblock content %}
+{% endpartialdef %}
+{% partial page-partial %}

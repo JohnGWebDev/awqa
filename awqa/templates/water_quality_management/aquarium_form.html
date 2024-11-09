@@ -1,22 +1,48 @@
 {% extends "../base.html" %}
 
-{% block title %} - Add Aquarium{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Add Aquarium</title>
+{% else %}
+{% block title %}Add Aquarium{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
 
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'aquarium-list' user.pk %}">{{ user }}'s Aquarium List</a></li>
-<li><strong>Add Aquarium</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquarium List</a></li>
+        <li><strong>Add Aquarium</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>Add Aquarium</h2>
-    <form id="aquariumForm" method="post">{% csrf_token %}
-        {{ form.as_p }}
-    </form>
-    <div class="flexContainer">
-        <input form="aquariumForm" class="button" type="submit" value="Save">
-        <a class="button" href="{% url 'aquarium-list' user.pk %}">Cancel</a>
-    </div>
-</section>
+<h2>Add Aquarium</h2>
+<form id="aquariumForm" hx-post="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">
+    {% csrf_token %}
+    {{ form.as_p }}
+</form>
+<div class="flexContainer">
+    <input form="aquariumForm" class="button" type="submit" value="Save">
+    <a class="button" hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+</div>
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

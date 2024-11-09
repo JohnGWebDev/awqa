@@ -15,7 +15,7 @@ class Aquarium(models.Model):
     is_active = models.BooleanField(default=True)
 
     def get_absolute_url(self):
-        return reverse("aquarium-detail", kwargs={"pk": self.pk})
+        return reverse("water_quality_management:aquarium-detail", kwargs={"pk": self.pk})
     
 
 class FreshWaterParameterLogEntry(models.Model):
@@ -25,7 +25,7 @@ class FreshWaterParameterLogEntry(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
+    
     class PHChoices(models.TextChoices):
         SIX = "6.0", "6.0"
         SIXPOINTFOUR = "6.4", "6.4"
@@ -105,4 +105,4 @@ class FreshWaterParameterLogEntry(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse("log-entry-detail", kwargs={"pk": self.pk})
+        return reverse("water_quality_management:log-entry-detail", kwargs={"pk": self.pk})

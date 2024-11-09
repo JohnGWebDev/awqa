@@ -1,0 +1,37 @@
+{% extends "account/base_entrance.html" %}
+
+{% load allauth i18n %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| {% trans "Sign Up" %}</title>
+{% else %}
+{% block title %}{% trans "Sign Up" %}{% endblock title %}
+{% endif %}
+
+{% block content %}
+    <h2>{% trans "Sign Up" %}</h2>
+    {% url "account_login" as login_url %}
+    <p>{% blocktranslate %}Already have an account? Then please<a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign in.</a>{% endblocktranslate %}</p>
+    {% if not SOCIALACCOUNT_ONLY %}
+        <form hx-post="{% url 'account_signup' %}" hx-target="#pageContainer" hx-push-url="true">
+            {% csrf_token %}
+            {% element fields form=form unlabeled=True %}
+            {% endelement %}
+            {{ redirect_field }}
+            {% element button tags="prominent,signup" type="submit" %}
+                {% trans "Sign Up" %}
+            {% endelement %}
+            <br>
+        </form>
+    {% endif %}
+    {% if SOCIALACCOUNT_ENABLED %}
+        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+{% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

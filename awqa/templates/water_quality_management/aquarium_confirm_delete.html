@@ -1,25 +1,50 @@
 {% extends "../base.html" %}
 
-{% block title %} - Delete Aquarium{% endblock title %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Delete Aquarium</title>
+{% else %}
+{% block title %}Delete Aquarium{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
 
 {% block breadcrumbs %}
-<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li><a href="{% url 'aquarium-list' user.pk %}">Aquarium List</a></li>
-<li><a href="{% url 'aquarium-detail' aquarium.id %}">{{ object.name }}</a></li>
-<li><strong>Delete Aquarium</strong></li>
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquarium List</a></li>
+        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.id %}" hx-target=#pageContainer hx-push-url="true">{{ object.name }}</a></li>
+        <li><strong>Delete Aquarium</strong></li>
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>{{ object.name }}</h2>
-    <form id="aquariumForm" method="post">{% csrf_token %}
-        <p>Are you sure you want to delete this aquarium?</p>
-        {{ form.as_p }}
-    </form>
-    <article class="flexContainer">
-        <input form="aquariumForm" class="button" type="submit" value="Confirm">
-        <a class="button" href="{% url 'aquarium-detail' aquarium.id %}">Cancel</a>
-    </article>
-</section>
+<h2>{{ object.name }}</h2>
+<form id="aquariumForm" hx-post="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target="#pageContainer" hx-push-url="true">
+    {% csrf_token %}
+    <p>Are you sure you want to delete this aquarium?</p>
+    {{ form.as_p }}
+</form>
+<article class="flexContainer">
+    <input form="aquariumForm" class="button" type="submit" value="Confirm">
+    <a class="button" hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.id %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+</article>
 {% endblock content %}
 
+{% endpartialdef %}
+
+{% partial page-partial %}

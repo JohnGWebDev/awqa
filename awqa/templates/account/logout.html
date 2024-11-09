@@ -1,0 +1,28 @@
+{% extends "account/base_manage.html" %}
+
+{% load allauth i18n %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| {% trans "Sign Out" %}</title>
+{% else %}
+{% block title %}{% trans "Sign Out" %}{% endblock title %}
+{% endif %}
+
+{% block content %}
+<h2>{% trans "Sign Out" %}</h2>
+<p>{% trans 'Are you sure you want to sign out?' %}</p>
+    <form hx-post="{% url 'account_logout' %}" hx-target="#pageContainer" hx-push-url="true">
+        {% csrf_token %}
+        {{ redirect_field }}
+        {% element button type="submit" %}
+            {% trans 'Sign Out' %}
+        {% endelement %}
+    </form>
+{% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

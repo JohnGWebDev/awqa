@@ -1,7 +1,37 @@
 {% extends "../base.html" %}
-{% load static %}
 
-{% block title %} - Aquarium Water Quality Analytics{% endblock title %}
+{% load static %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<ul id="appNav" hx-swap-oob="true">{% include "includes/app_nav.html" %}</ul>
+{% endif %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Aquarium Water Quality Analytics</title>
+{% else %}
+{% block title %}Aquarium Water Quality Analytics{% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
+{% block breadcrumbs %}
+{% if request.htmx %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak>
+    <ul x-ref="breadcrumbs">
+        {% partialdef breadcrumb-partial %}
+        {% endpartialdef%}
+        {% partial breadcrumb-partial %}
+    </ul>
+</nav>
+{% else %}
+{% partial breadcrumb-partial %}
+{% endif %}
+{% endblock breadcrumbs %}
 
 {% block meta %}
 <meta name="description" content="Test your water, log the results, and analyze trends to maintain a thriving ecosystem.">
@@ -17,7 +47,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "AWQA",
-    "url": "https://www.awqa.com",
+    "url": "https://www.awqanalytics.com",
     "applicationCategory": "Productivity",
     "operatingSystem": "All",
     "browserRequirements": "Requires JavaScript enabled and modern browser support.",
@@ -31,20 +61,19 @@
     }
     },
     "description": "Test your water, log the results, and analyze trends to maintain a thriving ecosystem.",
-    "logo": "https://www.awqa.com/static/logo.webp",
+    "logo": "https://www.awqanalytics.com/static/logo.webp",
     "author": {
     "@type": "Organization",
     "name": "AWQA"
     },
     "potentialAction": {
     "@type": "ViewAction",
-    "target": "https://www.awqa.com/accounts/signup/",
+    "target": "https://www.awqanalytics.com/accounts/signup/",
     "name": "Sign Up for Free"
     }
 }
 </script>
 {% endblock js %}
-
 {% block content %}
 <section style="text-align: center;">
     <h2>Aquarium Water Quality Analytics</h2>
@@ -79,7 +108,11 @@
 
 <section class="flexContainer">
     <h3>Ready to Get Started?</h3>
-    <a class="button" href="{% url 'account_signup' %}">Sign Up for Free</a>
+    <a class="button" href="{% url 'account_signup' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Sign Up for Free</a>
 </section>
 
 {% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

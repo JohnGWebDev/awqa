@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load static %}
 {% load socialaccount %}
-<html>
+<html lang="en">
     <head>
-        <title>AWQA{% block title %}{% endblock title %}</title>
+        <title>AWQA| {% block title %}{% endblock title %}</title>
       
         <!-- Meta -->
         <meta charset='UTF-8'>
@@ -12,16 +12,18 @@
         {% block meta %}{% endblock meta %}
 
         <!-- CSS -->
+        <link rel="icon" href="{% static 'logo.webp' %}" type="image/x-icon">
         <link rel='stylesheet' type='text/css' href="{% static 'base.css' %}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link defer href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
-        <link defer href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
-        <link defer href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
         {% block css %}{% endblock css %}
 
         <!-- JS -->
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+        <script defer src="{% static 'packages/htmx.min.js' %}"></script>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MET29XJHWQ"></script>
         <script>
@@ -33,68 +35,30 @@
         </script>
         {% block js %}{% endblock js %}
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% block body %}
-        <!-- If no user is logged in, we want the menu to be open by default and only display authentication links. -->
         <header {% if user.is_authenticated %}x-data="{open:false}"{% else %}x-data="{open:true}"{% endif %}>
             <section class="flexContainer">
                 <h1 id="appTitle">AWQA</h1>
                 <button :class="{'active': open}" x-text="open ? 'Close Menu': 'Open Menu'" @click="open = ! open"></button>
             </section>
-            <nav class="itemContainer">
-                <ul id="appNav" x-cloak x-show="open" @click.outside="open = false">
-                    {% if user.is_authenticated %}
-                        {% url 'dashboard' as dashboard %}
-                        {% if dashboard %}
-                            <li><a href="{{ dashboard }}">{% trans "Dashboard" %}</a></li>
-                        {% endif %}
-                        {% url 'user-profile' user.id as profile %}
-                        {% if profile %}
-                            <li><a href="{{ profile }}">{% trans "Profile" %}</a></li>
-                        {% endif %}
-                        {% url 'account_logout' as logout_url %}
-                        {% if logout_url %}
-                            <li><a href="{{ logout_url }}">{% trans "Sign Out" %}</a></li>
-                        {% endif %}
-                    {% else %}
-                        {% url 'index' as index %}
-                        {% if index %}
-                            <li><a href="{{ index }}">{% trans "Home" %}</a></li>
-                        {% endif %}
-                        {% url 'account_login' as login_url %}
-                        {% if login_url %}
-                            <li><a href="{{ login_url }}">{% trans "Sign In" %}</a></li>
-                        {% endif %}
-                        {% url 'account_signup' as signup_url %}
-                        {% if signup_url %}
-                            <li><a href="{{ signup_url }}">{% trans "Sign Up" %}</a></li>
-                        {% endif %}
-                    {% endif %}
+            <nav class="itemContainer" x-cloak x-show="open" @click.outside="open = false" x-transition.delay.40ms>
+                <ul id="appNav">
+                    {% include "includes/app_nav.html" %}
                 </ul>
             </nav>
         </header>
 
-        {% if messages %}
-        <section id="messageContainer">
-            <article class="itemContainer">
-                <strong>{% trans "Messages:" %}</strong>
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </article>
-        </section>
-        {% endif %}
+        {% include "includes/messages.html" %}
 
-        <nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0">
-            <ul x-ref="breadcrumbs">
+        <nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" x-cloak>
+            <ul x-ref="breadcrumbs" id="breadcrumbContent">
                 {% block breadcrumbs %}
                 {% endblock breadcrumbs %}
             </ul>
         </nav>
 
-        <main>
+        <main id="pageContainer">
             {% block content %}
             {% endblock content %}
         </main>
