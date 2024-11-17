@@ -11,6 +11,14 @@
 {% block title %}{% trans "Sign Out" %}{% endblock title %}
 {% endif %}
 
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
+{% block breadcrumbs %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
+{% endblock breadcrumbs %}
+
 {% block content %}
 <h2>{% trans "Sign Out" %}</h2>
 <p>{% trans 'Are you sure you want to sign out?' %}</p>

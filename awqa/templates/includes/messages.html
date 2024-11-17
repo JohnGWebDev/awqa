@@ -1,26 +1,20 @@
-{% load partials %}
-
-{% partialdef page-partial %}
 {% if messages %}
-<section id="messageContainer" 
-    x-data="{messages: [{% for message in messages %}'{{ message }}{% if not forloop.last %}', '{% endif %}'{% endfor %}]}"
-    x-show="messages.length > 0"
-    hx-swap-oob="true"
-    x-cloak>
+<section id="messageContainer" x-data="{messages: {{ messages|length }}}" x-show="messages > 0" @sl-after-hide="$data.messages--" hx-swap-oob="true" x-cloak>
     {% if messages %}
-    <ul class="itemContainer">
-        <template x-for="(message, index) in messages" :key="index">
-        <li>
-            <span x-text="message"></span>
-            <span @click="messages = []" style="cursor: pointer; float: right;">X</span>
-        </li>
-        </template>
-    </ul>
+    {% for message in messages %}
+    <sl-alert open closable variant="success" class="alert-closable">
+        <sl-icon slot="icon" name="check2-circle"></sl-icon>
+        <b>{{ message }}</b>
+    </sl-alert>
+    {% endfor %}
+    <script>
+        const alert = document.querySelector('.alert-closable');
+        alert.addEventListener('sl-after-hide', () => {
+          setTimeout(() => (alert.open = true), 2000);
+        });
+    </script>
     {% endif %}
 </section>
 {% else %}
 <section id="messageContainer" style="display: none;" hx-swap-oob="true"></section>
 {% endif %}
-{% endpartialdef %}
-
-{% partial page-partial %}

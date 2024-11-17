@@ -18,5 +18,5 @@ class UserCore(AbstractUser):
         return self.username
     
     def get_absolute_url(self):
-        return reverse("user-profile", kwargs={"pk": self.pk})
+        return reverse("accounts:user-profile", kwargs={"pk": self.pk})
     

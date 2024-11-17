@@ -11,12 +11,9 @@ class HtmxResponseMiddleware(object):
         return self.get_response(request)
 
     def process_template_response(self, request, response):
-        """This special method is a middleware hook, which is called every time a view is finished executing."""
+        """Middleware hook called after a view executes."""
         app_name = resolve(request.path).app_name
-        if app_name in settings.HTMX_APPS or app_name == '':
-            response.template_name = response.template_name[0]
-            if request.htmx:
-                response.template_name = response.template_name + "#page-partial"
+        if (app_name in settings.HTMX_APPS or app_name == '') and not response.headers.get("HX-Retarget"):
+            response.template_name = f"{response.template_name[0]}{'#page-partial' if request.htmx else ''}"
         print(response.template_name)
         return response
-        

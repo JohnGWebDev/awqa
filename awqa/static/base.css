@@ -91,13 +91,18 @@
 } a.button.active, input.button.active, button.active {
     border: 2px inset lightgray;
 }
-#messageContainer ul li {
-    border: 2px outset lightgray;
-    padding: 0.5em;
-    background-color: #0FBA85;
-    color: #ffffff;
-    font-weight: bold;
-
+#messageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.cf-turnstile {
+    margin: auto;
+}
+.errorlist {
+    margin-left: 0;
+    color: red;
+    list-style-type: disc;
 }
 
 /* Global container styles */
@@ -279,9 +284,11 @@ footer {
 }
 
 .gsi-material-button {
+    user-select:none;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    appearance: none;
     -webkit-appearance: none;
     background-color: #f2f2f2;
     background-image: none;

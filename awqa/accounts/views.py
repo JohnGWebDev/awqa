@@ -6,9 +6,26 @@ from django.core.exceptions import PermissionDenied
 
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView
+from allauth.account.views import SignupView
+from .forms import UserCoreSignupForm
+from django_htmx.http import retarget, reswap, _HttpResponse
+from django.http import HttpResponse
 
 # Create your views here.
 User = get_user_model()
+
+class UserCoreSignupView(SignupView):
+    form = UserCoreSignupForm
+
+    '''def form_invalid(self, form):
+        response = super().form_invalid(form)
+        response.headers["HX-Retarget"] = 'body'
+        response.headers["HX-Interrupt"] = True
+        print(response.headers)
+        return response'''
+    
+        
+    
 
 
 class UserProfileDetailView(DetailView, LoginRequiredMixin):

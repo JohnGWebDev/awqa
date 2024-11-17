@@ -1,0 +1,25 @@
+{% extends "allauth/layouts/base.html" %}
+{% block js %}
+<script type="text/javascript" defer>
+    function renderTurnstileWidget() {
+        // Get all elements with the class 'cf-turnstile'
+        const turnstileElements = document.querySelectorAll('.cf-turnstile');
+        // Loop through each Turnstile element
+        turnstileElements.forEach((element) => {
+            // Get the data attributes
+            const siteKey = element.dataset.sitekey;
+            const theme = element.dataset.theme;
+        
+            // Render the Turnstile captcha
+            window.turnstile.render(element, {
+            siteKey: siteKey,
+            theme: theme
+            });
+        });
+        };
+        document.addEventListener('htmx:afterRequest', function(evt) {
+        renderTurnstileWidget();
+        });
+</script>
+{% endblock js %}
+{% block content %}{% endblock %}

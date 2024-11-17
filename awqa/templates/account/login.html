@@ -12,21 +12,37 @@
 {% block title %}{% trans "Sign In" %}{% endblock title %}
 {% endif %}
 
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
+{% block breadcrumbs %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
+{% endblock breadcrumbs %}
+
 {% block content %}
 <h2>{% trans "Sign In" %}</h2>
     {% if not SOCIALACCOUNT_ONLY %}
     {% url "account_signup" as signup_url %}
-        <p>{% blocktranslate %}If you have not created an account yet, then please<a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign up</a>first.{% endblocktranslate %}<p>
-        <form hx-post="{% url 'account_login' %}" hx-target="#pageContainer" hx-push-url="true">
+        <form action="{% url 'account_login' %}" method="post">
             {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
+            {{ form.login }}
+            <br>
+            {{ form.password }}
+            <br>
+            {{ form.remember }}
+            {{ form.non_field_errors }}
+            <br>
             {{ redirect_field }}
-            {% element button type="submit" %}
-                {% trans "Sign In" %}
-            {% endelement %}
-            <p><a href="{% url 'account_reset_password' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Forgot password?</a><p>
+            {{ form.turnstile }}
+            <button type="submit">{% trans "Sign In" %}</button>
         </form>
+        <p style="display: block; text-align: center;">
+            {% blocktranslate %}If you have not created an account yet, then please<a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign up</a>first.{% endblocktranslate %}
+            <br>
+            <br>
+            <a href="{% url 'account_reset_password' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Forgot password?</a>
+        </p>
     {% endif %}
     {% if SOCIALACCOUNT_ENABLED %}
         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}

@@ -20,17 +20,7 @@
 {% endif %}
 
 {% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak>
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
 {% endblock breadcrumbs %}
 
 {% block meta %}

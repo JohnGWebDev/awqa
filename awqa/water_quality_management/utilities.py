@@ -1,14 +1,20 @@
 from django.http import HttpResponse
 from django.utils import timezone
 from datetime import timedelta
+import datetime
 
 from django.views import View
+import pytz
+from pytz import BaseTzInfo
+
+from tz_detect.utils import offset_to_timezone
 
 from .models import Aquarium
 import pandas as pd
 import plotly.express as pe
 import plotly.graph_objects as go
 from decimal import Decimal
+
 
 class ChartFactory(View):
 
@@ -29,22 +35,34 @@ class ChartFactory(View):
                 queryset.filter(is_private=False)
             # Use pandas to turn object into dataframe
             data = list(queryset.values())
+            tz = request.session.get("detected_tz")
+            new_tz = pytz.timezone(tz)
+
+            for log_entry in data:
+                date = log_entry['date_created']
+                local_date = date.astimezone(new_tz)
+                log_entry['date_created'] = local_date
+                print(local_date)
             data_frame = pd.DataFrame(data)
             
             chart = go.Figure()
+
+                
+            
             data_frame['ph'] = data_frame['ph'].apply(Decimal)
-            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['ph'], name="Ph", mode="lines+markers"))
+            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['ph'], name="pH", mode="lines+markers", hovertemplate="<b>%{x|%b %d, %Y}</b><br><b>%{x|(%I:%M%p)}</b><br><br><b>pH: </b>%{y}"))
             data_frame['high_range_ph'] = data_frame['high_range_ph'].apply(Decimal)
-            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['high_range_ph'], name="High Range Ph", mode="lines+markers"))
+            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['high_range_ph'], name="High Range pH", mode="lines+markers", hovertemplate="<b>%{x|%b %d, %Y}</b><br><b>%{x|(%I:%M%p)}</b><br><br><b>High Range pH: </b>%{y}"))
             data_frame['ammonia'] = data_frame['ammonia'].apply(Decimal)
-            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['ammonia'], name="Ammonia| ppm", mode="lines+markers"))
+            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['ammonia'], name="Ammonia| ppm", mode="lines+markers", hovertemplate="<b>%{x|%b %d, %Y}</b><br><b>%{x|(%I:%M%p)}</b><br><br><b>Ammonia: </b>%{y} ppm"))
             data_frame['nitrate'] = data_frame['nitrate'].apply(Decimal)
-            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['nitrate'], name="Nitrates| ppm", mode="lines+markers"))
+            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['nitrate'], name="Nitrates| ppm", mode="lines+markers", hovertemplate="<b>%{x|%b %d, %Y}</b><br><b>%{x|(%I:%M%p)}</b><br><br><b>Nitrates: </b>%{y} ppm"))
             data_frame['nitrite'] = data_frame['nitrite'].apply(Decimal)
-            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['nitrite'], name="Nitrites| ppm", mode="lines+markers"))
+            chart.add_trace(go.Scatter(x=data_frame['date_created'], y=data_frame['nitrite'], name="Nitrites| ppm", mode="lines+markers", hovertemplate="<b>%{x|%b %d, %Y}</b><br><b>%{x|(%I:%M%p)}</b><br><br><b>Nitrites: </b>%{y} ppm"))
             chart.update_layout(
                 autosize=True,
                 xaxis_title='Date Created',
+                hoverlabel=dict(bgcolor="lightgray", font_size=15),
                 title=dict(text='Water Quality Chart', font=dict(size=50), x=0.5, y=0.9, yanchor="top", yref='container'),
                 margin=dict(l=10, r=10, t=100, b=10),
                 title_font=dict(

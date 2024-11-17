@@ -10,24 +10,12 @@
 {% block title %}{{ object }}'s Profile{% endblock title %}
 {% endif %}
 
-{% block breadcrumbs %}
 {% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target="#pageContainer" hx-push-url="true">Dashboard</a></li>
-        {% if object == user %}
-            <li><strong>My Profile</strong></li>
-        {% else %}
-            <li><strong>{{ object }}'s Profile</strong></li>
-        {% endif %}
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
+{% include "includes/messages.html" %}
 {% endif %}
+
+{% block breadcrumbs %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
 {% endblock breadcrumbs %}
 
 {% block content %}

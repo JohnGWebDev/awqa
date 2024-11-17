@@ -11,21 +11,39 @@
 {% block title %}{% trans "Sign Up" %}{% endblock title %}
 {% endif %}
 
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% endif %}
+
+{% block breadcrumbs %}
+<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
+{% endblock breadcrumbs %}
+
 {% block content %}
     <h2>{% trans "Sign Up" %}</h2>
     {% url "account_login" as login_url %}
-    <p>{% blocktranslate %}Already have an account? Then please<a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign in.</a>{% endblocktranslate %}</p>
     {% if not SOCIALACCOUNT_ONLY %}
-        <form hx-post="{% url 'account_signup' %}" hx-target="#pageContainer" hx-push-url="true">
+        <form id="form" action="{% url 'account_signup' %}" method="post">
             {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
+            {{ form.username }}
+            {{ form.username.errors }}
+            <br>
+            {{ form.email }}
+            {{ form.email.errors }}
+            <br>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+            <br>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+            <br>
             {{ redirect_field }}
-            {% element button tags="prominent,signup" type="submit" %}
-                {% trans "Sign Up" %}
-            {% endelement %}
+            {{ form.turnstile }}
+            <button type="submit">{% trans "Sign Up" %}</button>
             <br>
         </form>
+        
+        <p style="display: block; text-align: center;">{% blocktranslate %}Already have an account? Then please<a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign in.</a>{% endblocktranslate %}</p>
     {% endif %}
     {% if SOCIALACCOUNT_ENABLED %}
         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}

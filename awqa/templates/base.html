@@ -19,11 +19,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/light.css" />
+
+
         {% block css %}{% endblock css %}
 
         <!-- JS -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
         <script defer src="{% static 'packages/htmx.min.js' %}"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/shoelace-autoloader.js"></script>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MET29XJHWQ"></script>
         <script>
@@ -51,7 +55,7 @@
 
         {% include "includes/messages.html" %}
 
-        <nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" x-cloak>
+        <nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak>
             <ul x-ref="breadcrumbs" id="breadcrumbContent">
                 {% block breadcrumbs %}
                 {% endblock breadcrumbs %}
@@ -91,5 +95,7 @@
 
         {% block footer_js %}
         {% endblock footer_js %}
+        {% load tz_detect %}
+        {% tz_detect %}
     </body> 
 </html>
