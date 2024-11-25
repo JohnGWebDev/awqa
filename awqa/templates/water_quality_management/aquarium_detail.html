@@ -36,11 +36,15 @@
         </sl-menu>
     </sl-dropdown>
 </section>
-
+{% if object.description %}
+<sl-card style="display: block; max-width: 600px; margin: auto;padding: 0.5em;">
+    <p>{{ object.description }}</p>
+</sl-card>
+{% endif %}
 <section id="tabsContainer" x-data="{ tab: 'Log' }">
     <nav>
         <a :class="{ 'active': tab === 'Log' }" @click.prevent="tab = 'Log'"><span class="viewlistIcon">view_list</span></a>
-        <a hx-get="{% url 'water_quality_management:render-chart' object.pk 30 %}" hx-indicator="#chartSpinner" hx-target="#aquariumChart" :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'"><span class="monitoringIcon">monitoring</span></a>
+        <a hx-get="{% url 'water_quality_management:render-chart' object.pk 30 %}" hx-target="#aquariumChart" :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'"><span class="monitoringIcon">monitoring</span></a>
     </nav>
     <div class="displayTab" x-cloak x-show="tab === 'Log'">
         <h3 style="text-align: center; padding: 1em;">Water Quality Log</h3>
