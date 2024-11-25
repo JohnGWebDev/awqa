@@ -13,11 +13,8 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
-{% endblock breadcrumbs %}
 
 {% block content %}
     <h2>{% trans "Sign Up" %}</h2>
@@ -42,7 +39,6 @@
             <button type="submit">{% trans "Sign Up" %}</button>
             <br>
         </form>
-        
         <p style="display: block; text-align: center;">{% blocktranslate %}Already have an account? Then please<a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign in.</a>{% endblocktranslate %}</p>
     {% endif %}
     {% if SOCIALACCOUNT_ENABLED %}

@@ -13,45 +13,39 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.aquarium.id %}" hx-target=#pageContainer hx-push-url="true">{{ object.aquarium.name }}</a></li>
-        <li><strong>Log Entry: {{ object.date_created|date:'d/m/y' }}</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
-<h2>{{ object.date_created }}</h2>
-<ul>
-    <li>Owner: <b>{{ object.user }}</b></li>
-    <li>pH: <b>{{ object.ph }}</b></li>
-    <li>High Range pH: <b>{{ object.high_range_ph }}</b></li>
-    <li>Ammonia: <b>{{ object.ammonia }}</b></li>
-    <li>Nitrite: <b>{{ object.nitrite }}</b></li>
-    <li>Nitrate: <b>{{ object.nitrate }}</b></li>
-    {% if object.last_updated != object.date_created %}
-        <li>Last Updated: <b>{{ object.last_updated }}</b></li>
-    {% endif %}
-</ul>
-{% if object.aquarium.user == user %}
 <div class="flexContainer">
-    <a class="button" hx-get="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Log Entry</a>
-    <a class="button" hx-get="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Entry</a>
+<h2 style="max-width: 600px; margin: auto;">{{ object.date_created }}</h2>
+<sl-dropdown>
+    <sl-icon-button name="gear" label="Settings" slot="trigger" style="font-size: 2em; margin-top: 20px; background-color: white; border-radius: 5px; border: 1px solid lightgrey;"></sl-icon-button>
+    <sl-menu>
+        <sl-menu-label>General</sl-menu-label>
+        <sl-menu-item hx-get="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Log Entry</sl-menu-item>
+        <sl-menu-item hx-get="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Entry</sl-menu-item>
+    </sl-menu>
+</sl-dropdown>
 </div>
-{% endif %}
+<sl-card style="display:block;max-width:600px;margin:auto;">
+    <h3 slot="header">{{ object.aquarium.name }}</h3>
+    <ul>
+        <li><b>pH: </b>{{ object.ph }}</li>
+        <br>
+        <li><b>High Range pH: </b>{{ object.high_range_ph }}</li>
+        <br>
+        <li><b>Ammonia: </b>{{ object.ammonia }}ppm</li>
+        <br>
+        <li><b>Nitrite: </b>{{ object.nitrite }}ppm</li>
+        <br>
+        <li><b>Nitrate: </b>{{ object.nitrate }}ppm</li>
+        {% if object.last_updated != object.date_created %}
+            <br>
+            <li><b>Last Updated: </b>{{ object.last_updated }}</li>
+        {% endif %}
+    </ul>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

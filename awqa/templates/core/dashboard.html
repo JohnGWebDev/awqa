@@ -16,21 +16,14 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
 
-{% block breadcrumbs %}
-<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
-{% endblock breadcrumbs %}
-
 {% block content %}
-<h2>Dashboard</h2>
+<h2 style="max-width: 600px; margin: auto;">Dashboard</h2>
 <section class="widgetContainer">
-    <article>
-        {% include "water_quality_management/includes/recent_aquariums_list.html" with object_list=aquarium_list %}
-    </article>
-    <article>
-        {% include "water_quality_management/includes/recent_log_entries_list.html" with object_list=log_entry_list %}
-    </article>
+    {% include "water_quality_management/includes/recent_aquariums_list.html" with object_list=aquarium_list %}
+    {% include "water_quality_management/includes/recent_log_entries_list.html" with object_list=log_entry_list %}
 </section>
 {% endblock content %}
 

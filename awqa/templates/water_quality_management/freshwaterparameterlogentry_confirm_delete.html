@@ -12,39 +12,19 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquaruim List</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.aquarium.pk %}" hx-target=#pageContainer hx-push-url="true">{{ object.aquarium.name }}</a></li>
-        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Log Entry: {{ object.date_created|date:'d/m/y' }}</a></li>
-        <li><strong>Delete Log Entry</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
-<h2>{{ object.date_created|date:"D M d, Y" }}<span style="float: right;" class="fredoka-medium">{{ object.date_created|time:"g:i A" }}</span></h2>
-<p>Aquarium: <b>{{ object.aquarium.name }}</b></p>
-<form id="aquariumForm" hx-post="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">
-    {% csrf_token %}
-    <p>Are you sure you want to delete this log entry?</p>
-    {{ form.as_p }}
-</form>
-<div class="flexContainer">
-    <input form="aquariumForm" class="button" type="submit" value="Confirm">
-    <a class="button" hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
-</div>
+<h2 style="max-width: 600px; margin: auto;">{{ object.date_created }}</h2>
+<sl-card style="display: block; margin: auto; max-width: 600px;">
+    <h3 slot="header">{{ object.aquarium.name }}</h3>
+    <p>Are you sure you want to <b>delete</b> this log entry?<br><br>This action is <b>irreversible</b>.</p>
+    <sl-button-group slot="footer" style="display: block;">
+        <sl-button style="width: 50%;" variant="danger" outline hx-post="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete</sl-button>
+        <sl-button style="width: 50%;" variant="success" hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+    </sl-button-group>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

@@ -1,93 +1,135 @@
-from datetime import timedelta
+from datetime import datetime
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core import serializers
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse_lazy
-from django.utils import timezone
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
 
 from django.contrib.messages.views import SuccessMessageMixin
 from core.mixins import OptionallyPrivateObjectMixin, PrivatePageMixin
 from .models import Aquarium, FreshWaterParameterLogEntry
-
-import json
-import pandas as pd
-import plotly.express as pe
-import plotly.graph_objects as go
-from decimal import Decimal
+from .forms import AquariumForm, FreshWaterParamaterLogEntryForm
 
 User = get_user_model()
 
 
 # When creating a new aquarium object, we can assume the current
 # user will be the owner, and the date fields will be automatically populated.
-class AquariumCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class AquariumCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Aquarium
-    fields = ('name', 'is_private',)
+    form_class = AquariumForm
     success_message = "New aquarium was added successfully!"
 
     def dispatch(self, request, *args, **kwargs):
         if self.request.user.aquarium_set.count() >= self.request.user.max_aquariums:
-            raise PermissionDenied
+            messages.error(request, "You have reached your maximum number of aquariums.")
+            return redirect(reverse("dashboard"))
         return super().dispatch(request, *args, **kwargs)
-        
-    
 
     def form_valid(self, form):
         if self.request.user.can_create_aquarium == False:
             raise PermissionDenied
         form.instance.user = self.request.user
         return super(AquariumCreateView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.request.user.pk})},
+            {'name': 'Add Aquarium'},
+        ]
+        context["breadcrumbs"] = pages
+        return context
+    
 
 
 # This view displays a chart using Plotly. I created a function that
 # returns the last 30 days of log entry data in json format for Plotly to consume.
-class AquariumDetailView(OptionallyPrivateObjectMixin, DetailView):
+class AquariumDetailView(PrivatePageMixin, DetailView):
     model = Aquarium
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.object.freshwaterparameterlogentry_set.all().order_by('-date_created'), 5)
+        page_number = self.request.GET.get("page")
+        context["page_obj"] = paginator.get_page(page_number)
+
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.name },
+        ]
+        context["breadcrumbs"] = pages
+        return context
 
 
 
 # If a user's profile is set to private, only they may view their aquarium list.
 # If a user's profile is set to public, we must still restrict aquarium objects set to private.
 class AquariumListView(LoginRequiredMixin, ListView):
+    paginate_by = 10
+
     def get_queryset(self):
-        user = User.objects.get(pk=self.kwargs['pk'])
-        users_active_aquariums = Aquarium.objects.filter(is_active=True).filter(user=user)
+        user = get_object_or_404(User, pk=self.kwargs['pk'])
+        users_active_aquariums = Aquarium.objects.filter(is_active=True).filter(user=user).order_by('-date_created')
         if user != self.request.user:
-            users_active_aquariums = users_active_aquariums.filter(is_private=False)
+            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
+                raise PermissionDenied
         return users_active_aquariums
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['list_owner'] = User.objects.get(pk=self.kwargs['pk'])
-        if context['list_owner'].is_private:
-            if context['list_owner'] != self.request.user:
-                if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                    raise PermissionDenied
-        if context['list_owner'].is_active == False:
-            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                raise PermissionDenied
-        if context['list_owner'] == self.request.user:
-            context['list_owner'] = None
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List'},
+        ]
+        context["breadcrumbs"] = pages
         return context
 
 
 # When updating an aquarium object, only the owner, staff and superusers should have access to this page.
 # The last_updated field will be populated automatically.
-class AquariumUpdateView(SuccessMessageMixin, UpdateView, PrivatePageMixin):
+class AquariumUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
     model = Aquarium
-    fields = ('name', 'is_private',)
+    form_class = AquariumForm
     template_name = 'water_quality_management/aquarium_update_form.html'
     success_message = "Your aquarium was updated successfully!"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.pk})},
+            {'name': 'Update Aquarium'}
+        ]
+        context["breadcrumbs"] = pages
+        return context
+    
+
 
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
-class AquariumDeleteView(SuccessMessageMixin, DeleteView, PrivatePageMixin):
+class AquariumDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
     model = Aquarium
     success_url = reverse_lazy('dashboard')
     success_message = "Your aquarium was deleted successfully!"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.pk})},
+            {'name': 'Delete Aquarium'}
+        ]
+        context["breadcrumbs"] = pages
+        return context
 
 
 # When creating a new log entry object, we can assume the current
@@ -95,14 +137,21 @@ class AquariumDeleteView(SuccessMessageMixin, DeleteView, PrivatePageMixin):
 # The aquarium object owner is the only one who should be able to view this page.
 # We must use the aquarium pk we passed through kwargs to retrieve the correct object instance.
 # Then pass that object to the aquarium field in our form instance.
-class WaterQualityLogEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class WaterQualityLogEntryCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = FreshWaterParameterLogEntry
-    fields = ('is_private', 'ph', 'high_range_ph', 'ammonia', 'nitrite', 'nitrate',)
+    form_class = FreshWaterParamaterLogEntryForm
     success_message = "New log entry was added successfully!"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["aquarium"] = Aquarium.objects.get(pk=self.kwargs['pk'])
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':context['aquarium'].user.pk})},
+            {'name': context['aquarium'].name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':context['aquarium'].pk})},
+            {'name': 'Add Log Entry'}
+        ]
+        context["breadcrumbs"] = pages
         if context["aquarium"].user != self.request.user:
             raise PermissionDenied
         return context
@@ -110,53 +159,88 @@ class WaterQualityLogEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, Cr
     def form_valid(self, form):
         form.instance.aquarium = Aquarium.objects.get(pk=self.kwargs['pk'])
         form.instance.user = self.request.user
+        form.instance.aquarium.last_updated = datetime.now()
+        form.instance.aquarium.save()
         return super(WaterQualityLogEntryCreateView, self).form_valid(form)
 
 
 # Super straight-forward DetailView, see comments on custom mixin for more info.
-class WaterQualityLogEntryDetailView(DetailView, OptionallyPrivateObjectMixin):
+class WaterQualityLogEntryDetailView(PrivatePageMixin, DetailView):
     model = FreshWaterParameterLogEntry
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
+            {'name': self.object.date_created}
+        ]
+        context["breadcrumbs"] = pages
+        return context
 
 
 # When updating an entry log object, only the owner, staff and superusers should have access to this page.
 # The last_updated field will be populated automatically.
-class WaterQualityLogEntryUpdateView(SuccessMessageMixin, UpdateView, PrivatePageMixin):
+class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
     model = FreshWaterParameterLogEntry
-    fields = ('is_private', 'ph', 'high_range_ph', 'ammonia', 'nitrite', 'nitrate',)
+    form_class = FreshWaterParamaterLogEntryForm
     template_name = 'water_quality_management/freshwaterparameterlogentry_update_form.html'
     success_message = "Your log entry was updated successfully!"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
+            {'name': self.object.date_created, 'url': reverse('water_quality_management:log-entry-detail', kwargs={'pk': self.object.pk})},
+            {'name': 'Update Log Entry'}
+        ]
+        context["breadcrumbs"] = pages
+        return context
+
 
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
-class WaterQualityLogEntryDeleteView(SuccessMessageMixin, DeleteView, PrivatePageMixin):
+class WaterQualityLogEntryDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
     model = FreshWaterParameterLogEntry
-    success_url = reverse_lazy("aquarium-list")
+    success_url = reverse_lazy("water_quality_management:aquarium-list")
     success_message = "Your log entry was deleted successfully!"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
+            {'name': self.object.date_created, 'url': reverse('water_quality_management:log-entry-detail', kwargs={'pk': self.object.pk})},
+            {'name': 'Delete Log Entry'}
+        ]
+        context["breadcrumbs"] = pages
+        return context
 
 
 # If a user's profile is set to private, only they may view their log entry list.
 # If a user's profile is set to public, we must still restrict log entry objects set to private.
 class WaterQualityLogEntryListView(LoginRequiredMixin, ListView):
+    paginate_by = 10
 
     def get_queryset(self):
-        user = User.objects.get(pk=self.kwargs['pk'])
-        users_active_log_entries = FreshWaterParameterLogEntry.objects.filter(is_active=True).filter(user=user)
+        user = get_object_or_404(User, pk=self.kwargs['pk'])
+        users_active_log_entries = FreshWaterParameterLogEntry.objects.filter(is_active=True).filter(user=user).order_by('-date_created')
         if user != self.request.user:
-            users_active_log_entries = users_active_log_entries.filter(is_private=False)
+            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
+                raise PermissionDenied
         return users_active_log_entries
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['list_owner'] = User.objects.get(pk=self.kwargs['pk'])
-        if context['list_owner'].is_private:
-            if context['list_owner'] != self.request.user:
-                if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                    raise PermissionDenied
-        if context['list_owner'].is_active == False:
-            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                raise PermissionDenied
-        if context['list_owner'] == self.request.user:
-            context['list_owner'] = None
+
+        pages = [
+            {'name': 'Dashboard', 'url': reverse('dashboard')},
+            {'name': 'My Log Entry List'},
+        ]
+        context["breadcrumbs"] = pages
         return context
 
     

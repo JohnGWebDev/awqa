@@ -12,11 +12,8 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
-{% endblock breadcrumbs %}
 
 {% block content %}
 <section class="{% if object == user %}flexContainer{% else %}itemContainer{% endif %}">

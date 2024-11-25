@@ -44,7 +44,7 @@
         <header {% if user.is_authenticated %}x-data="{open:false}"{% else %}x-data="{open:true}"{% endif %}>
             <section class="flexContainer">
                 <h1 id="appTitle">AWQA</h1>
-                <button :class="{'active': open}" x-text="open ? 'Close Menu': 'Open Menu'" @click="open = ! open"></button>
+                <sl-button style="line-height: 104px;" :class="{'active': open}" x-text="open ? 'Close Menu': 'Open Menu'" @click="open = ! open"></sl-button>
             </section>
             <nav class="itemContainer" x-cloak x-show="open" @click.outside="open = false" x-transition.delay.40ms>
                 <ul id="appNav">
@@ -55,12 +55,7 @@
 
         {% include "includes/messages.html" %}
 
-        <nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak>
-            <ul x-ref="breadcrumbs" id="breadcrumbContent">
-                {% block breadcrumbs %}
-                {% endblock breadcrumbs %}
-            </ul>
-        </nav>
+        {% include "includes/breadcrumbs.html" %}
 
         <main id="pageContainer">
             {% block content %}

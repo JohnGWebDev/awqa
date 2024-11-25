@@ -12,37 +12,39 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
 
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquaruim List</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.aquarium.id %}" hx-target=#pageContainer hx-push-url="true">{{ object.aquarium.name }}</a></li>
-        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.id %}" hx-target=#pageContainer hx-push-url="true">Log Entry: {{ object.date_created|date:'d/m/y' }}</a></li>
-        <li><strong>Update Log Entry</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
-<h2>Update Log Entry</h2>
-<p>Aquarium: <b>{{ object.aquarium.name }}</b></p>
-<form id="aquariumForm" hx-post="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{% csrf_token %}
-    {{ form.as_p }}
-</form>
-<div class="flexContainer">
-    <input form="aquariumForm" class="button" type="submit" value="Save">
-    <a class="button" hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
-</div>
+<h2 style="max-width: 600px; margin: auto;">Update Log Entry</h2>
+<sl-card style="display: block; margin: auto; max-width: 600px;">
+    <h3 slot="header">{{ object.aquarium.name }}</h3>
+    <form id="aquariumForm" method="post" action="{% url 'water_quality_management:update-log-entry' object.pk %}">
+        {% csrf_token %}
+        {{ form.ph }}
+        {{ form.ph.errors }}
+        <br>
+        {{ form.high_range_ph }}
+        {{ form.high_range_ph.errors }}
+        <br>
+        {{ form.ammonia }}
+        {{ form.ammonia.errors }}
+        <br>
+        {{ form.nitrite }}
+        {{ form.nitrite.errors }}
+        <br>
+        {{ form.nitrate }}
+        {{ form.nitrate.errors }}
+        <br>
+        {{ form.notes }}
+        {{ form.notes.errors }}
+    </form>
+    <sl-button-group slot="footer" style="display: block;">
+        <sl-button style="width: 50%;" hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</sl-button>
+        <sl-button style="width: 50%;" variant="success" type="submit" form="aquariumForm">Save</sl-button>
+    </sl-button-group>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

@@ -12,23 +12,8 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'accounts:user-profile' user.pk %}" hx-target="#pageContainer" hx-push-url="true">My Profile</a></li>
-        <li><strong>Delete Account</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
 <section class="itemContainer">

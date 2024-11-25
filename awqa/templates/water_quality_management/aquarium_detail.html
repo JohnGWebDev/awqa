@@ -21,78 +21,61 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target="#pageContainer" hx-push-url="true">Dashboard</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-list' object.user.pk %}" hx-target=#pageContainer hx-push-url="true">{% if object.user != user %}{{ object.user }}'s{% else %}My{% endif %} Aquarium List</a></li>
-        <li><strong>{{ object.name }}</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
-<section class="{% if object.user == user %}flexContainer{% else %}itemContainer{% endif %}">
-    <h2>{{ object.name }}</h2>
-    {% if object.user == user %}
-    <nav class="dropdownContainer" x-data="{isOpen: false}">
-        <span @click="isOpen = ! isOpen" class="settingsIcon" :class="{'active':isOpen}">settings</span>
-        <ul class="dropdownContent" x-cloak x-show="isOpen" @click.away="isOpen = false">
-            <li><p>General</p></li>
-            <li><a class="button" hx-get="{% url 'water_quality_management:update-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Aquarium</a></li>
-            <li><a class="button" hx-get="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Aquarium</a></li>
-        </ul>
-    </nav>
-    {% endif %}
-</section>
-
-<section class="itemContainer labelContainer">
-    <p class="label">{% if object.is_private %}Private{% else %}Public{% endif %}</p>
+<section class="flexContainer">
+    <h2 style="max-width: 600px; margin: auto;">{{ object.name }}</h2>
+    <sl-dropdown>
+        <sl-icon-button name="gear" label="Settings" slot="trigger" style="font-size: 2em; margin-top: 20px; background-color: white; border-radius: 5px; border: 1px solid lightgrey;"></sl-icon-button>
+        <sl-menu>
+            <sl-menu-label>General</sl-menu-label>
+            <sl-menu-item hx-get="{% url 'water_quality_management:update-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Aquarium</sl-menu-item>
+            <sl-menu-item hx-get="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Aquarium</sl-menu-item>
+        </sl-menu>
+    </sl-dropdown>
 </section>
 
 <section id="tabsContainer" x-data="{ tab: 'Log' }">
     <nav>
         <a :class="{ 'active': tab === 'Log' }" @click.prevent="tab = 'Log'"><span class="viewlistIcon">view_list</span></a>
-        <a hx-get="{% url 'water_quality_management:render-chart' object.pk 30 %}" hx-target="#aquariumChart" :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'"><span class="monitoringIcon">monitoring</span></a>
+        <a hx-get="{% url 'water_quality_management:render-chart' object.pk 30 %}" hx-indicator="#chartSpinner" hx-target="#aquariumChart" :class="{ 'active': tab === 'Chart' }" @click.prevent="tab = 'Chart'"><span class="monitoringIcon">monitoring</span></a>
     </nav>
     <div class="displayTab" x-cloak x-show="tab === 'Log'">
-        <article class="{% if object.user == user %}flexContainer{% else %}itemContainer{% endif %}">
-            <h3>Water Quality Log</h3>
-            {% if object.user == user %}
-                <a class="button" hx-get="{% url 'water_quality_management:add-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Add Log Entry</a>
-            {% endif %}
-        </article>
+        <h3 style="text-align: center; padding: 1em;">Water Quality Log</h3>
         {% if object.freshwaterparameterlogentry_set.all %}
-        <table id="waterQualityLog">
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-            </tr>
-            {% for entry in object.freshwaterparameterlogentry_set.all %}
-                <tr>
-                    {% url 'water_quality_management:log-entry-detail' entry.pk as log_entry_detail_url %}
-                    {% if log_entry_detail_url %}
-                        <td><a hx-get="{{ log_entry_detail_url }}" hx-target=#pageContainer hx-push-url="true">{{ entry.date_created|date:"D M d, Y" }}</a></td>
-                        <td><a hx-get="{{ log_entry_detail_url }}" hx-target=#pageContainer hx-push-url="true">{{ entry.date_created|time:"g:i A" }}</a></td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </table>
+        <sl-card style="display: block;max-width: 600px; margin: auto; margin-bottom: 1em;">
+            <div slot="header">
+            {% include "includes/paginate.html" %}
+            </div>
+            <ul id="waterQualityLog">
+                {% for entry in page_obj %}
+                        {% url 'water_quality_management:log-entry-detail' entry.pk as log_entry_detail_url %}
+                        {% if log_entry_detail_url %}
+                            <li><a hx-get="{{ log_entry_detail_url }}" hx-target=#pageContainer hx-push-url="true">{{ entry.date_created }}</a></li>
+                        {% endif %}
+                {% endfor %}
+            </ul>
+            <div slot="footer">
+                <sl-button style="line-height: 60px;" variant="success" hx-get="{% url 'water_quality_management:add-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Add Log Entry<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
+            </div>
+        </sl-card>
         {% else %}
             <p style="text-align: center;">There are currently no log entries.</p>
         {% endif %}
     </div>
     <div class="displayTab" x-cloak x-show="tab === 'Chart'">
-        <div id="aquariumChart"></div>
+        <div id="aquariumChart">
+            <div style="padding: 1em;">
+                <br>
+                <sl-skeleton style="height: 2em;"></sl-skeleton>
+                <br>
+                <sl-skeleton style="height: 7em;"></sl-skeleton>
+                <br>
+                <sl-skeleton style="height: 7em;"></sl-skeleton>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock content %}

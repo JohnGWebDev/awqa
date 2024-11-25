@@ -12,35 +12,25 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-{% if request.htmx %}
-<nav id="breadcrumbContainer" x-data x-show="$refs.breadcrumbs.innerHTML.trim().length > 0" hx-swap-oob="true">
-    <ul x-ref="breadcrumbs">
-        {% partialdef breadcrumb-partial %}
-        <li><a hx-get="{% url 'dashboard' %}" hx-target=#pageContainer hx-push-url="true">Dashboard</a></li>
-        <li><a hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">My Aquarium List</a></li>
-        <li><strong>Add Aquarium</strong></li>
-        {% endpartialdef%}
-        {% partial breadcrumb-partial %}
-    </ul>
-</nav>
-{% else %}
-{% partial breadcrumb-partial %}
-{% endif %}
-{% endblock breadcrumbs %}
 
 {% block content %}
-<h2>Add Aquarium</h2>
-<form id="aquariumForm" hx-post="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">
+<h2 style="max-width: 600px; margin: auto;">Add Aquarium</h2>
+<sl-card style="display: block; margin: auto; max-width: 600px;">
+<form id="aquariumForm" method="post" method="{% url 'water_quality_management:create-aquarium' %}" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.name }}
+    {{ form.name.errors }}
+    <br>
+    {{ form.description }}
+    {{ form.description.errors }}
 </form>
-<div class="flexContainer">
-    <input form="aquariumForm" class="button" type="submit" value="Save">
-    <a class="button" hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
-</div>
+<sl-button-group slot="footer" style="display: block;">
+    <sl-button style="width: 50%;" hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target=#pageContainer hx-push-url="true">Cancel</sl-button>
+    <sl-button style="width: 50%;" variant="success" type="submit" form="aquariumForm">Save</sl-button>
+</sl-button-group>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

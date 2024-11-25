@@ -1,0 +1,15 @@
+{% if breadcrumbs %}
+<nav id="breadcrumbContainer" x-data="{'breadcrumbs': {{ breadcrumbs|length }}}" x-show="breadcrumbs > 0" hx-swap-oob="true" x-cloak>
+    <sl-breadcrumb x-ref="breadcrumbs">
+        {% for page in breadcrumbs %}
+            {% if page.url %}
+            <sl-breadcrumb-item hx-get="{{ page.url }}" hx-target=#pageContainer hx-push-url="true">{{ page.name }}</sl-breadcrumb-item>
+            {% else %}
+            <sl-breadcrumb-item>{{ page.name }}</sl-breadcrumb-item>
+            {% endif %}
+        {% endfor %}
+    </sl-breadcrumb>
+</nav>
+{% else %}
+<nav id="breadcrumbContainer" x-data style="display: none;" hx-swap-oob="true" x-cloak></nav>
+{% endif %}

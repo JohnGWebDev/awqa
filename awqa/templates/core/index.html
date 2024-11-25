@@ -17,11 +17,8 @@
 
 {% if request.htmx %}
 {% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
 {% endif %}
-
-{% block breadcrumbs %}
-<nav id="breadcrumbContainer" x-data style="display:none;" hx-swap-oob="true" x-cloak></nav>
-{% endblock breadcrumbs %}
 
 {% block meta %}
 <meta name="description" content="Test your water, log the results, and analyze trends to maintain a thriving ecosystem.">

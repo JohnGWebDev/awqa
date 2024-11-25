@@ -1,0 +1,15 @@
+<sl-button-group style="width: 100%;">
+    {% if page_obj.has_previous %}
+        <sl-button variant="primary" hx-get="?page={{ page_obj.previous_page_number }}" style="width: 25%;" hx-target="#pageContainer">Previous</sl-button>
+    {% else %}
+        <sl-button variant="default" style="width: 25%;" disabled>Previous</sl-button>
+    {% endif %}
+    <span style="width: 50%; text-align: center; line-height: 40px;">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <sl-button variant="primary" hx-get="?page={{ page_obj.next_page_number }}" style="width: 25%;" hx-target="#pageContainer">Next</sl-button>
+    {% else %}
+        <sl-button variant="default" style="width: 25%;" disabled>Next</sl-button>
+    {% endif %}
+</sl-button-group>

@@ -52,7 +52,7 @@
 } h3 {
     font-family: "Fredoka", sans-serif;
     font-weight: normal;
-    font-size: 2em;
+    font-size: 1.8em;
 } h4 {
     font-family: "Maven Pro", sans-serif;
     font-weight: 500;
@@ -129,6 +129,14 @@
     max-width: 600px;
     overflow-y: scroll;
     padding: 0.5em;
+}
+.widgetContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+.cardWidget {
+    flex-grow: 1;
 }
 
 .dropdownContainer {
@@ -216,7 +224,7 @@
     
 } @media (min-width: 700px) {
     .widgetContainer {
-        display: flex;
+        flex-direction: row;
     }
 }
 
