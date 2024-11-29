@@ -29,7 +29,7 @@ class ChartFactory(View):
         aquarium = Aquarium.objects.get(pk=pk)
         queryset = aquarium.freshwaterparameterlogentry_set.filter(date_created__range=(start_date, now))
 
-        if queryset:
+        if queryset.count() > 1:
             # Use pandas to turn object into dataframe
             data = list(queryset.values())
             tz = request.session.get("detected_tz")
@@ -86,5 +86,10 @@ class ChartFactory(View):
             )
             chart_contents = '<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>' + chart.to_html(full_html=False)
         else:
-            chart_contents = '<p>There is currently no data to be displayed.</p>'
+            chart_contents = '''
+            <sl-alert open variant="success" style="margin: 1em;>
+                <sl-icon slot="icon" name="plus-lg"></sl-icon>
+                <b><p>You will need more than one log entry to start tracking your data in a chart.</p></b>
+            </sl-alert>
+            '''
         return HttpResponse(chart_contents)

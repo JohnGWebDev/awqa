@@ -5,9 +5,9 @@
 {% partialdef page-partial %}
 
 {% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| {% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</title>
+<title hx-swap-oob="innerHTML:title">AWQA| Log Entry List</title>
 {% else %}
-{% block title %}{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List{% endblock title %}
+{% block title %}Log Entry List{% endblock title %}
 {% endif %}
 
 {% if request.htmx %}
@@ -16,16 +16,21 @@
 {% endif %}
 
 {% block content %}
-<h2 style="max-width: 600px; margin: auto;">{% if list_owner %}{{ list_owner }}'s{% else %}My{% endif %} Log Entry List</h2>
+<h2 style="max-width: 600px; margin: auto;">Log Entry List</h2>
 <sl-card style="display: block;width: 100%;max-width: 600px;margin: auto;">
-<div slot="header">
-{% include "includes/paginate.html" %}
-</div>
-<ul>
-    {% for log_entry in object_list %}
-        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' log_entry.pk %}" hx-target=#pageContainer hx-push-url="true">{{ log_entry.date_created }}</a></li>
-    {% endfor %}
-</ul>
+    <div slot="header">{% include "includes/paginate.html" %}</div>
+    {% if object_list %}
+    <ul>
+        {% for log_entry in object_list %}
+            <li><a hx-get="{% url 'water_quality_management:log-entry-detail' log_entry.pk %}" hx-target=#pageContainer hx-push-url="true">{{ log_entry.date_created }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <sl-alert open variant="success">
+        <sl-icon slot="icon" name="exclamation-lg"></sl-icon>
+        <b><p>Visit one of your aquariums to start tracking water quality!</p></b>
+    </sl-alert>
+    {% endif %}
 </sl-card>
 {% endblock content %}
 

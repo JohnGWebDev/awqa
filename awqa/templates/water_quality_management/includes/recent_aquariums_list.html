@@ -1,10 +1,17 @@
 <sl-card class="cardWidget">
     <h3 slot="header">Recent Aquariums</h3>
+    {% if object_list %}
     <ul>
         {% for object in object_list %}
         <li><a hx-get="{% url 'water_quality_management:aquarium-detail' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ object.name }}</a></li>
         {% endfor %}
     </ul>
+    {% else %}
+        <sl-alert open variant="success">
+            <sl-icon slot="icon" name="plus-lg"></sl-icon>
+            <b><p>Add an aquarium to start tracking water quality!</p></b>
+        </sl-alert>
+    {% endif %}
     <br>
     <sl-button variant="success" hx-get="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">Add Aquarium<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
     <sl-button style="width: 100%;" variant="primary" slot="footer" hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target="#pageContainer" hx-push-url="true">View All</sl-button>

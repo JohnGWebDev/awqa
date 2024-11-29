@@ -5,9 +5,9 @@
 {% partialdef page-partial %}
 
 {% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| My Aquarium List</title>
+<title hx-swap-oob="innerHTML:title">AWQA| Aquarium List</title>
 {% else %}
-{% block title %}My Aquarium List{% endblock title %}
+{% block title %}Aquarium List{% endblock title %}
 {% endif %}
 
 {% if request.htmx %}
@@ -16,19 +16,24 @@
 {% endif %}
 
 {% block content %}
-<h2 style="max-width:600px;margin:auto;">My Aquarium List</h2>
+<h2 style="max-width:600px;margin:auto;">Aquarium List</h2>
 <sl-card style="display:block;width:100%;max-width:600px;margin:auto;">
-<div slot="header">
-    {% include "includes/paginate.html" %}
-</div>
-<ul>
-    {% for aquarium in object_list %}
-        <li><a hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ aquarium.name }}</a></li>
-    {% endfor %}
-</ul>
-<div slot="footer">
-    <sl-button variant="success" hx-get="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">Add Aquarium<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
-</div>
+    <div slot="header">{% include "includes/paginate.html" %}</div>
+    {% if object_list %}
+    <ul>
+        {% for aquarium in object_list %}
+            <li><a hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ aquarium.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <sl-alert open variant="success">
+        <sl-icon slot="icon" name="plus-lg"></sl-icon>
+        <b><p>Add an aquarium to start tracking water quality!</p></b>
+    </sl-alert>
+    {% endif %}
+    <div slot="footer">
+        <sl-button variant="success" hx-get="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">Add Aquarium<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
+    </div>
 </sl-card>
 {% endblock content %}
 

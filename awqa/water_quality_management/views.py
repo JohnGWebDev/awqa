@@ -41,7 +41,7 @@ class AquariumCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.request.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.request.user.pk})},
             {'name': 'Add Aquarium'},
         ]
         context["breadcrumbs"] = pages
@@ -62,7 +62,7 @@ class AquariumDetailView(PrivatePageMixin, DetailView):
 
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.name },
         ]
         context["breadcrumbs"] = pages
@@ -87,7 +87,7 @@ class AquariumListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List'},
+            {'name': 'Aquarium List'},
         ]
         context["breadcrumbs"] = pages
         return context
@@ -105,7 +105,7 @@ class AquariumUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.pk})},
             {'name': 'Update Aquarium'}
         ]
@@ -124,7 +124,7 @@ class AquariumDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.pk})},
             {'name': 'Delete Aquarium'}
         ]
@@ -147,7 +147,7 @@ class WaterQualityLogEntryCreateView(SuccessMessageMixin, LoginRequiredMixin, Cr
         context["aquarium"] = Aquarium.objects.get(pk=self.kwargs['pk'])
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':context['aquarium'].user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':context['aquarium'].user.pk})},
             {'name': context['aquarium'].name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':context['aquarium'].pk})},
             {'name': 'Add Log Entry'}
         ]
@@ -172,7 +172,7 @@ class WaterQualityLogEntryDetailView(PrivatePageMixin, DetailView):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
             {'name': self.object.date_created}
         ]
@@ -192,7 +192,7 @@ class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, Upda
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
             {'name': self.object.date_created, 'url': reverse('water_quality_management:log-entry-detail', kwargs={'pk': self.object.pk})},
             {'name': 'Update Log Entry'}
@@ -204,14 +204,14 @@ class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, Upda
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
 class WaterQualityLogEntryDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
     model = FreshWaterParameterLogEntry
-    success_url = reverse_lazy("water_quality_management:aquarium-list")
+    success_url = reverse_lazy("dashboard")
     success_message = "Your log entry was deleted successfully!"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
+            {'name': 'Aquarium List', 'url': reverse('water_quality_management:aquarium-list', kwargs={'pk':self.object.user.pk})},
             {'name': self.object.aquarium.name, 'url': reverse('water_quality_management:aquarium-detail', kwargs={'pk':self.object.aquarium.pk})},
             {'name': self.object.date_created, 'url': reverse('water_quality_management:log-entry-detail', kwargs={'pk': self.object.pk})},
             {'name': 'Delete Log Entry'}
@@ -238,7 +238,7 @@ class WaterQualityLogEntryListView(LoginRequiredMixin, ListView):
 
         pages = [
             {'name': 'Dashboard', 'url': reverse('dashboard')},
-            {'name': 'My Log Entry List'},
+            {'name': 'Log Entry List'},
         ]
         context["breadcrumbs"] = pages
         return context

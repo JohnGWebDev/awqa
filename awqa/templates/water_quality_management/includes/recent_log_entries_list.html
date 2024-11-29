@@ -1,9 +1,16 @@
 <sl-card class="cardWidget">
     <h3 slot="header">Recent Log Entries</h3>
-    <ul>
-    {% for object in object_list %}
-        <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ object.date_created }}</a></li>
-    {% endfor %}
-    </ul>
+    {% if object_list %}
+        <ul>
+        {% for object in object_list %}
+            <li><a hx-get="{% url 'water_quality_management:log-entry-detail' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{{ object.date_created }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    <sl-alert open variant="success">
+        <sl-icon slot="icon" name="exclamation-lg"></sl-icon>
+        <b><p>Visit one of your aquariums to start tracking water quality!</p></b>
+    </sl-alert>
+    {% endif %}
     <sl-button style="width: 100%;" variant="primary" slot="footer" hx-get="{% url 'water_quality_management:log-entry-list' user.pk %}" hx-target="#pageContainer" hx-push-url="true">View All</sl-button>
 </sl-card>
