@@ -4,76 +4,49 @@
 
 {% partialdef page-partial %}
 
-{% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| {{ object }}'s Profile</title>
+{% if not request.htmx %}
+    {% block title %}Profile{% endblock title %}
 {% else %}
-{% block title %}{{ object }}'s Profile{% endblock title %}
-{% endif %}
-
-{% if request.htmx %}
-{% include "includes/messages.html" %}
-{% include "includes/breadcrumbs.html" %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Profile</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
 {% endif %}
 
 {% block content %}
-<section class="{% if object == user %}flexContainer{% else %}itemContainer{% endif %}">
+<section class="flexContainer">
     <h2>{{ object }}</h2>
-    {% if object == user %}
-    <nav class="dropdownContainer" x-data="{ isOpen: false}">
-        <span @click="isOpen = ! isOpen" class="settingsIcon" :class="{'active':isOpen}">
-            settings
-        </span>
-        <ul class="dropdownContent" x-cloak x-show="isOpen" @click.away="isOpen = false">
-            <li><p>General</p></li>
-            <li><a class="button" hx-get="{% url 'accounts:update-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Update Profile</a></li>
-            <li><a class="button" hx-get="{% url 'accounts:delete-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete Account</a></li>
-            <li><p>Registration</p></li>
-            {% if user.is_authenticated %}
-                {% url 'account_email' as email_url %}
-                {% if email_url %}
-                    <li><a class="button" href="{{ email_url }}">{% trans "Change Email" %}</a></li>
-                {% endif %}
-                {% url 'account_change_password' as change_password_url %}
-                {% if change_password_url %}
-                    <li><a class="button" href="{{ change_password_url }}">{% trans "Change Password" %}</a></li>
-                {% endif %}
-                {% url 'socialaccount_connections' as connections_url %}
-                {% if connections_url %}
-                    <li><a class="button" href="{{ connections_url }}">{% trans "Account Connections" %}</a></li>
-                {% endif %}
-                {% url 'mfa_index' as mfa_url %}
-                {% if mfa_url %}
-                    <li><a class="button" href="{{ mfa_url }}">{% trans "Two-Factor Authentication" %}</a></li>
-                {% endif %}
-                {% url 'usersessions_list' as usersessions_list_url %}
-                {% if usersessions_list_url %}
-                    <li><a class="button" href="{{ usersessions_list_url }}">{% trans "Sessions" %}</a></li>
-                {% endif %}
+    <sl-dropdown>
+        <sl-icon-button name="gear" label="Settings" slot="trigger" style="font-size: 2em; margin-top: 20px; background-color: white; border-radius: 5px; border: 1px solid lightgrey;"></sl-icon-button>
+        <sl-menu>
+            <sl-menu-label>General</sl-menu-label>
+            <sl-menu-item hx-get="{% url 'accounts:update-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Update Profile</sl-menu-item>
+            <sl-menu-item hx-get="{% url 'accounts:delete-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete Account</sl-menu-item>
+            <sl-divider></sl-divider>
+            <sl-menu-label>Registration</sl-menu-label>
+            {% url 'account_email' as email_url %}
+            {% if email_url %}
+                <sl-menu-item hx-get="{{ email_url }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Change Email" %}</sl-menu-item>
             {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
+            {% url 'account_change_password' as change_password_url %}
+            {% if change_password_url %}
+                <sl-menu-item hx-get="{{ change_password_url }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Change Password" %}</sl-menu-item>
+            {% endif %}
+            {% url 'socialaccount_connections' as connections_url %}
+            {% if connections_url %}
+                <sl-menu-item hx-get="{{ connections_url }}" hx-target="#pageContainer" hx-push-url="true">{% trans "Account Connections" %}</sl-menu-item>
+            {% endif %}
+        </sl-menu>
+    </sl-dropdown>
 </section>
 
-<section class="itemContainer">
+<sl-card style="display: block; max-width: 600px; margin: auto;">
     <p><b>Date Joined:</b> {{ object.date_joined }}</p>
     <p><b>Last Login:</b> {{ object.last_login }}</p>
-</section>
-
-<section class="itemContainer labelContainer">
-    {% if object.is_superuser %}<p class="label">Admin</p>{% endif %}
-    {% if object.is_staff %}<p class="label">Staff</p>{% endif %}
-    <p class="label">{% if object.is_active %}Active{% else %}Inactive{% endif %}</p>
-    <p class="label">{% if object.is_private %}Private{% else %}Public{% endif %}</p>
-</section>
-
+</sl-card>
+<br>
 <section class="widgetContainer">
-    <article>
-        {% include "water_quality_management/includes/recent_aquariums_list.html" with object_list=aquarium_list %}
-    </article>
-    <article>
-        {% include "water_quality_management/includes/recent_log_entries_list.html" with object_list=log_entry_list %}
-    </article>
+    {% include "water_quality_management/includes/recent_aquariums_list.html" with object_list=aquarium_list %}
+    {% include "water_quality_management/includes/recent_log_entries_list.html" with object_list=log_entry_list %}
 </section>
 {% endblock content %}
 

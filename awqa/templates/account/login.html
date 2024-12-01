@@ -6,22 +6,20 @@
 
 {% partialdef page-partial %}
 
-{% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| {% trans "Sign In" %}</title>
+{% if not request.htmx %}
+    {% block title %}Sign In{% endblock title %}
 {% else %}
-{% block title %}{% trans "Sign In" %}{% endblock title %}
-{% endif %}
-
-{% if request.htmx %}
-{% include "includes/messages.html" %}
-{% include "includes/breadcrumbs.html" %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Sign In</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
 {% endif %}
 
 {% block content %}
-<h2>{% trans "Sign In" %}</h2>
+<h2 style="max-width: 600px; margin: auto;">{% trans "Sign In" %}</h2>
     {% if not SOCIALACCOUNT_ONLY %}
     {% url "account_signup" as signup_url %}
-        <form action="{% url 'account_login' %}" method="post">
+    <sl-card style="display:block;max-width:600px;margin:auto;">
+        <form id="form" action="{% url 'account_login' %}" method="post">
             {% csrf_token %}
             {{ form.login }}
             <br>
@@ -31,17 +29,19 @@
             {{ form.non_field_errors }}
             <br>
             {{ redirect_field }}
+            <br>
             {{ form.turnstile }}
-            <button type="submit">{% trans "Sign In" %}</button>
+            <br>
         </form>
-        <p style="display: block; text-align: center;">
-            {% blocktranslate %}If you have not created an account yet, then please<a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign up</a>first.{% endblocktranslate %}
-            <br>
-            <br>
-            <a href="{% url 'account_reset_password' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Forgot password?</a>
-        </p>
+        <a href="{% url 'account_reset_password' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Forgot password?</a>
+        <sl-button-group slot="footer" style="display: block;">
+            <sl-button style="width: 50%;" href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Sign Up</sl-button>
+            <sl-button style="width: 50%;" variant="success" form="form" type="submit">{% trans "Sign In" %}</sl-button>
+        </sl-button-group>
+    </sl-card>
     {% endif %}
     {% if SOCIALACCOUNT_ENABLED %}
+        <br>
         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
     {% endif %}
 {% endblock content %}

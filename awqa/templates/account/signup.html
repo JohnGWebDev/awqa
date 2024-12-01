@@ -5,43 +5,45 @@
 
 {% partialdef page-partial %}
 
-{% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| {% trans "Sign Up" %}</title>
+{% if not request.htmx %}
+    {% block title %}Sign Up{% endblock title %}
 {% else %}
-{% block title %}{% trans "Sign Up" %}{% endblock title %}
-{% endif %}
-
-{% if request.htmx %}
-{% include "includes/messages.html" %}
-{% include "includes/breadcrumbs.html" %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Sign Up</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
 {% endif %}
 
 {% block content %}
-    <h2>{% trans "Sign Up" %}</h2>
-    {% url "account_login" as login_url %}
+<h2 style="max-width: 600px; margin: auto;">{% trans "Sign Up" %}</h2>
     {% if not SOCIALACCOUNT_ONLY %}
-        <form id="form" action="{% url 'account_signup' %}" method="post">
-            {% csrf_token %}
-            {{ form.username }}
-            {{ form.username.errors }}
-            <br>
-            {{ form.email }}
-            {{ form.email.errors }}
-            <br>
-            {{ form.password1 }}
-            {{ form.password1.errors }}
-            <br>
-            {{ form.password2 }}
-            {{ form.password2.errors }}
-            <br>
-            {{ redirect_field }}
-            {{ form.turnstile }}
-            <button type="submit">{% trans "Sign Up" %}</button>
-            <br>
-        </form>
-        <p style="display: block; text-align: center;">{% blocktranslate %}Already have an account? Then please<a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">sign in.</a>{% endblocktranslate %}</p>
+        <sl-card style="display:block;max-width:600px;margin:auto;">
+            <form id="form" action="{% url 'account_signup' %}" method="post">
+                {% csrf_token %}
+                {{ form.username }}
+                {{ form.username.errors }}
+                <br>
+                {{ form.email }}
+                {{ form.email.errors }}
+                <br>
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+                <br>
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+                <br>
+                {{ redirect_field }}
+                <br>
+                {{ form.turnstile }}
+            </form>
+            {% url "account_login" as login_url %}
+            <sl-button-group slot="footer" style="display: block;">
+                <sl-button style="width: 50%;" href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">Sign In</sl-button>
+                <sl-button style="width: 50%;" variant="success" form="form" type="submit">{% trans "Sign Up" %}</sl-button>
+            </sl-button-group>
+        </sl-card>
     {% endif %}
     {% if SOCIALACCOUNT_ENABLED %}
+        <br>
         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
     {% endif %}
 {% endblock content %}

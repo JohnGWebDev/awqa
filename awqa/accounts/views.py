@@ -10,37 +10,17 @@ from allauth.account.views import SignupView
 from .forms import UserCoreSignupForm
 from django_htmx.http import retarget, reswap, _HttpResponse
 from django.http import HttpResponse
+from core.mixins import PrivatePageMixin
 
 # Create your views here.
 User = get_user_model()
 
 class UserCoreSignupView(SignupView):
     form = UserCoreSignupForm
-
-    '''def form_invalid(self, form):
-        response = super().form_invalid(form)
-        response.headers["HX-Retarget"] = 'body'
-        response.headers["HX-Interrupt"] = True
-        print(response.headers)
-        return response'''
-    
-        
     
 
-
-class UserProfileDetailView(DetailView, LoginRequiredMixin):
+class UserProfileDetailView(PrivatePageMixin, LoginRequiredMixin, DetailView):
     model = User
-
-    def get_object(self, queryset=None):
-        object = super().get_object(queryset)
-        if object.is_private:
-            if object != self.request.user:
-                if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                    raise PermissionDenied
-        if object.is_active == False:
-            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                raise PermissionDenied
-        return object
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,28 +28,13 @@ class UserProfileDetailView(DetailView, LoginRequiredMixin):
         context["aquarium_list"] = user.aquarium_set.order_by("-last_updated")[:5]
         context["log_entry_list"] = user.freshwaterparameterlogentry_set.order_by("-last_updated")[:5]
         return context
-    
 
 
-class UserProfileUpdateView(UpdateView, LoginRequiredMixin):
+class UserProfileUpdateView(PrivatePageMixin, LoginRequiredMixin, UpdateView):
     model = User
-    fields = ('username', 'first_name', 'last_name', 'email', 'is_private')
-
-    def get_object(self, queryset=None):
-        object = super().get_object(queryset)
-        if object != self.request.user:
-            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                raise PermissionDenied
-        return object
+    fields = ('username', 'first_name', 'last_name')
 
 
-class UserProfileDeleteView(DeleteView, LoginRequiredMixin):
+class UserProfileDeleteView(PrivatePageMixin, LoginRequiredMixin, DeleteView):
     model = User
     success_url = reverse_lazy("index")
-
-    def get_object(self, queryset=None):
-        object = super().get_object(queryset)
-        if object != self.request.user:
-            if self.request.user.is_staff == False and self.request.user.is_superuser == False:
-                raise PermissionDenied
-        return object

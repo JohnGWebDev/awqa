@@ -1,4 +1,5 @@
 {% extends "allauth/layouts/base.html" %}
+{% block title %}{% endblock title %}
 {% block js %}
 <script type="text/javascript" defer>
     function renderTurnstileWidget() {
@@ -23,3 +24,5 @@
 </script>
 {% endblock js %}
 {% block content %}{% endblock %}
+{% block extra_body %}{% endblock extra_body %}
+{% block footer_js %}{% endblock footer_js %}

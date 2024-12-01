@@ -3,12 +3,9 @@
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
 {% if socialaccount_providers %}
+<sl-card style="display: block; max-width: 600px; margin: auto;">
     {% if not SOCIALACCOUNT_ONLY %}
-        {% element hr %}
-        {% endelement %}
-        {% element h2 %}
-            {% translate "Or use a third-party" %}
-        {% endelement %}
+    <h3 slot="header">{% translate "Or use a third-party" %}</h3>
     {% endif %}
     <a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
     <button class="gsi-material-button">
@@ -29,4 +26,5 @@
       </button>
     </a>
     {% include "socialaccount/snippets/login_extra.html" %}
+  </sl-card>
 {% endif %}

@@ -22,7 +22,7 @@ class PrivatePageMixin(LoginRequiredMixin, SingleObjectMixin):
 
     def get_object(self, queryset=None):
         object = super().get_object(queryset)
-        if object.user != self.request.user:
+        if object or object.user != self.request.user:
             if self.request.user.is_staff == False and self.request.user.is_superuser == False:
                 raise PermissionDenied
         return object

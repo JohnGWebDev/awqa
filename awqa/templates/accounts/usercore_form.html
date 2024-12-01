@@ -3,28 +3,25 @@
 
 {% partialdef page-partial %}
 
-{% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| Update Profile</title>
+{% if not request.htmx %}
+    {% block title %}Update Profile{% endblock title %}
 {% else %}
-{% block title %}Update Profile{% endblock title %}
-{% endif %}
-
-{% if request.htmx %}
-{% include "includes/messages.html" %}
-{% include "includes/breadcrumbs.html" %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Update Profile</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
 {% endif %}
 
 {% block content %}
-<section>
-    <h2>Update Profile</h2>
+<h2 style="max-width: 600px; margin: auto;">Update Profile</h2>
+<sl-card style="display: block; max-width: 600px; margin: auto;padding: 0.5em;">
     <form id="aquariumForm" hx-post="{% url 'accounts:update-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">{% csrf_token %}
         {{ form.as_p }}
     </form>
-    <div class="flexContainer">
-        <input form="aquariumForm" class="button" type="submit" value="Save">
-        <a class="button" href="{% url 'accounts:user-profile' user.pk %}" hx-target="#pageContainer" hx-push-url="true">Cancel</a>
-    </div>
-</section>
+    <sl-button-group slot="footer" style="display: block;">
+        <sl-button style="width: 50%;" href="{% url 'accounts:user-profile' user.pk %}" hx-target="#pageContainer" hx-push-url="true">Cancel</sl-button>
+        <sl-button style="width: 50%;" variant="success" form="aquariumForm" type="submit">Save</sl-button>
+    </sl-button-group>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

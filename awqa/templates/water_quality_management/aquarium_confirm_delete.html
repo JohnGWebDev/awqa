@@ -19,10 +19,10 @@
 <h2 style="max-width: 600px; margin: auto;">{{ object.name }}</h2>
 <sl-card style="display:block;max-width:600px;margin:auto;">
     <p>Are you sure you want to <b>delete</b> this aquarium?<br><br>It will also delete all log entries.<br><br>This action is <b>irreversible</b>.</p>
-<sl-button-group slot="footer" style="display: block;">
-    <sl-button style="width: 50%;" variant="danger" outline hx-post="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete</sl-button>
-    <sl-button style="width: 50%;" variant="success" hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.id %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
-</sl-button-group>
+    <sl-button-group slot="footer" style="display: block;">
+        <sl-button style="width: 50%;" variant="danger" outline hx-post="{% url 'water_quality_management:delete-aquarium' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete</sl-button>
+        <sl-button style="width: 50%;" variant="success" hx-get="{% url 'water_quality_management:aquarium-detail' aquarium.id %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+    </sl-button-group>
 </sl-card>
 {% endblock content %}
 

@@ -4,30 +4,23 @@
 
 {% partialdef page-partial %}
 
-{% if request.htmx %}
-<title hx-swap-oob="innerHTML:title">AWQA| Delete Account</title>
+{% if not request.htmx %}
+    {% block title %}Delete Account{% endblock title %}
 {% else %}
-{% block title %}Delete Account{% endblock title %}
-{% endif %}
-
-{% if request.htmx %}
-{% include "includes/messages.html" %}
-{% include "includes/breadcrumbs.html" %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Delete Account</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
 {% endif %}
 
 {% block content %}
-<section class="itemContainer">
-    <h2>Delete Account?</h2>
-    <form id="aquariumForm" hx-post="{% url 'accounts:delete-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">
-        {% csrf_token %}
-        <p>Are you sure you want to delete your account?</p>
-        {{ form.as_p }}
-    </form>
-    <article class="flexContainer">
-        <input form="aquariumForm" class="button" type="submit" value="Confirm">
-        <a class="button" href="{% url 'accounts:user-profile' user.id %}">Cancel</a>
-    </article>
-</section>
+<h2 style="max-width: 600px; margin: auto;">Delete Account?</h2>
+<sl-card style="display:block;max-width:600px;margin:auto;">
+    <p>Are you sure you want to <b>permanently</b> delete your account?<br><br>This action is <b>irreversible</b>.<br><br>You will lose <b>all</b> saved data.</p>
+    <sl-button-group slot="footer" style="display: block;">
+        <sl-button style="width: 50%;" variant="danger" outline hx-post="{% url 'accounts:delete-user-profile' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete</sl-button>
+        <sl-button style="width: 50%;" variant="success" hx-get="{% url 'accounts:user-profile' user.id %}" hx-target=#pageContainer hx-push-url="true">Cancel</a>
+    </sl-button-group>
+</sl-card>
 {% endblock content %}
 
 {% endpartialdef %}

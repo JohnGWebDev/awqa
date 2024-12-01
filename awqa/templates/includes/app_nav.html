@@ -15,14 +15,14 @@
 {% else %}
     {% url 'index' as index %}
     {% if index %}
-        <li><a href="{{ index }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Home" %}</a></li>
+        <li><a href="{{ index }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer" hx-push-url="true">{% trans "Home" %}</a></li>
     {% endif %}
     {% url 'account_login' as login_url %}
     {% if login_url %}
-        <li><a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Sign In" %}</a></li>
+        <li><a href="{{ login_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer" hx-push-url="true">{% trans "Sign In" %}</a></li>
     {% endif %}
     {% url 'account_signup' as signup_url %}
     {% if signup_url %}
-        <li><a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer">{% trans "Sign Up" %}</a></li>
+        <li><a href="{{ signup_url }}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer" hx-push-url="true">{% trans "Sign Up" %}</a></li>
     {% endif %}
 {% endif %}

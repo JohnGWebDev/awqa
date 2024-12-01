@@ -1,0 +1,109 @@
+{% extends "account/base_manage_email.html" %}
+
+{% load allauth i18n %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if not request.htmx %}
+    {% block title %}Email Addresses{% endblock title %}
+{% else %}
+    <title hx-swap-oob="innerHTML:title">AWQA| Email Addresses</title>
+    {% include "includes/messages.html" %}
+    {% include "includes/breadcrumbs.html" %}
+{% endif %}
+
+{% block content %}
+<h2 style="max-width: 600px; margin: auto;">{% trans "Email Addresses" %}</h2>
+    {% if emailaddresses %}
+    <sl-card style="display: block;max-width: 600px; margin: auto; margin-bottom: 1em;">
+        <p slot="header">{% trans 'The following email addresses are associated with your account:' %}</p>
+        {% url 'account_email' as email_url %}
+        {% element form form=form action=email_url method="post" tags="email,list" %}
+            {% slot body %}
+                {% csrf_token %}
+                {% for radio in emailaddress_radios %}
+                    {% with emailaddress=radio.emailaddress %}
+                        {% element field type="radio" checked=radio.checked name="email" value=emailaddress.email id=radio.id %}
+                            {% slot label %}
+                                {{ emailaddress.email }}
+                                {% if emailaddress.verified %}
+                                    <sl-badge variant="success">
+                                        {% translate "Verified" %}
+                                    </sl-badge>
+                                {% else %}
+                                    <sl-badge variant="danger">
+                                        {% translate "Unverified" %}
+                                    </sl-badge>
+                                {% endif %}
+                                {% if emailaddress.primary %}
+                                    <sl-badge>
+                                        {% translate "Primary" %}
+                                    </sl-badge>
+                                {% endif %}
+                            {% endslot %}
+                        {% endelement %}
+                    {% endwith %}
+                {% endfor %}
+            {% endslot %}
+            {% slot actions %}
+            <sl-button-group style="display: block;">
+                <sl-button variant="primary" type="submit" name="action_primary" style="width: 33.33%;" outline>
+                    {% trans 'Make Primary' %}
+                </sl-button>
+                <sl-button variant="neutral" type="submit" name="action_send" style="width: 33.33%;" outline>
+                    {% trans 'Verify' %}
+                </sl-button>
+                <sl-button variant="danger" type="submit" name="action_remove" style="width: 33.33%;" outline>
+                    {% trans 'Remove' %}
+                </sl-button>
+            </sl-button-group>
+            {% endslot %}
+        {% endelement %}
+    </sl-card>
+    {% else %}
+        <sl-card style="display: block;max-width: 600px; margin: auto; margin-bottom: 1em;">
+            {% include "account/snippets/warn_no_email.html" %}
+        </sl-card>
+    {% endif %}
+    {% if can_add_email %}
+        <sl-card style="display: block;max-width: 600px; margin: auto; margin-bottom: 1em;">
+            <h3 slot="header" style="max-width: 600px;margin: auto;">{% trans "Add Email Address" %}</h3>
+            {% url 'account_email' as action_url %}
+            {% element form form=form method="post" action=action_url tags="email,add" %}
+                {% slot body %}
+                    {% csrf_token %}
+                    {% element fields form=form %}
+                    {% endelement %}
+                {% endslot %}
+                {% slot actions %}
+                <sl-button-group>
+                    <sl-button style="width: 50%;" hx-get="{% url 'accounts:user-profile' user.id %}" hx-target=#pageContainer hx-push-url="true">Cancel</sl-button>
+                    <sl-button style="width: 50%;" variant="success" name="action_add" type="submit">
+                        {% trans "Add Email" %}
+                    </sl-button>
+                </sl-button-group>
+                {% endslot %}
+            {% endelement %}
+        </sl-card>
+    {% endif %}
+{% endblock content %}
+{% block extra_body %}
+    <script>
+(function() {
+  var message = "{% trans 'Do you really want to remove the selected email address?' %}";
+  var actions = document.getElementsByName('action_remove');
+  if (actions.length) {
+    actions[0].addEventListener("click", function(e) {
+      if (! confirm(message)) {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+    </script>
+{% endblock extra_body %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}
