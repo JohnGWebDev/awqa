@@ -51,7 +51,7 @@ class AquariumCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
 
 # This view displays a chart using Plotly. I created a function that
 # returns the last 30 days of log entry data in json format for Plotly to consume.
-class AquariumDetailView(PrivatePageMixin, DetailView):
+class AquariumDetailView(PrivatePageMixin, LoginRequiredMixin, DetailView):
     model = Aquarium
 
     def get_context_data(self, **kwargs):
@@ -95,7 +95,7 @@ class AquariumListView(LoginRequiredMixin, ListView):
 
 # When updating an aquarium object, only the owner, staff and superusers should have access to this page.
 # The last_updated field will be populated automatically.
-class AquariumUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
+class AquariumUpdateView(SuccessMessageMixin, PrivatePageMixin, LoginRequiredMixin, UpdateView):
     model = Aquarium
     form_class = AquariumForm
     template_name = 'water_quality_management/aquarium_update_form.html'
@@ -115,7 +115,7 @@ class AquariumUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
 
 
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
-class AquariumDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
+class AquariumDeleteView(SuccessMessageMixin, PrivatePageMixin, LoginRequiredMixin, DeleteView):
     model = Aquarium
     success_url = reverse_lazy('dashboard')
     success_message = "Your aquarium was deleted successfully!"
@@ -165,7 +165,7 @@ class WaterQualityLogEntryCreateView(SuccessMessageMixin, LoginRequiredMixin, Cr
 
 
 # Super straight-forward DetailView, see comments on custom mixin for more info.
-class WaterQualityLogEntryDetailView(PrivatePageMixin, DetailView):
+class WaterQualityLogEntryDetailView(PrivatePageMixin, LoginRequiredMixin, DetailView):
     model = FreshWaterParameterLogEntry
 
     def get_context_data(self, **kwargs):
@@ -182,7 +182,7 @@ class WaterQualityLogEntryDetailView(PrivatePageMixin, DetailView):
 
 # When updating an entry log object, only the owner, staff and superusers should have access to this page.
 # The last_updated field will be populated automatically.
-class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, UpdateView):
+class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, LoginRequiredMixin, UpdateView):
     model = FreshWaterParameterLogEntry
     form_class = FreshWaterParamaterLogEntryForm
     template_name = 'water_quality_management/freshwaterparameterlogentry_update_form.html'
@@ -202,7 +202,7 @@ class WaterQualityLogEntryUpdateView(SuccessMessageMixin, PrivatePageMixin, Upda
 
 
 # When deleting an aquarium object, only the owner, staff and superusers should have access to this page.
-class WaterQualityLogEntryDeleteView(SuccessMessageMixin, PrivatePageMixin, DeleteView):
+class WaterQualityLogEntryDeleteView(SuccessMessageMixin, PrivatePageMixin, LoginRequiredMixin, DeleteView):
     model = FreshWaterParameterLogEntry
     success_url = reverse_lazy("dashboard")
     success_message = "Your log entry was deleted successfully!"
