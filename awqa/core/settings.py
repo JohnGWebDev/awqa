@@ -25,6 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '3a*2b6yhk=+62nk*-#y3h^br@-bh-i^6g4h&s9+4tt_cj0iw+3'
 
+OPENAI_API_KEY = ''
+
+STRIPE_SECRET_KEY = 'sk_test_51OLwZJEwHN2N88WYVGNOZyn4pXxXYsT5oMzLpdJIm4HkrPPhD2CGkoKPAecrTxNN48XnOT8AUBDRbLUQxhIR7Qlk00GE8dPBpZ'
 
 SITE_ID = 2
 
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     
     'accounts',
     'water_quality_management',
+    'payments',
 
     'allauth',
     'allauth.account',
@@ -64,6 +68,7 @@ INSTALLED_APPS = [
 HTMX_APPS = [
     'accounts',
     'water_quality_management',
+    'payments'
 ]
 
 AUTH_USER_MODEL = "accounts.UserCore"

@@ -11,6 +11,7 @@ from .forms import UserCoreSignupForm
 from django_htmx.http import retarget, reswap, _HttpResponse
 from django.http import HttpResponse
 from core.mixins import PrivatePageMixin
+from payments.models import Product
 
 # Create your views here.
 User = get_user_model()
@@ -27,6 +28,7 @@ class UserProfileDetailView(PrivatePageMixin, LoginRequiredMixin, DetailView):
         user = User.objects.get(pk=self.kwargs["pk"])
         context["aquarium_list"] = user.aquarium_set.order_by("-last_updated")[:5]
         context["log_entry_list"] = user.freshwaterparameterlogentry_set.order_by("-last_updated")[:5]
+        context["product_1_pk"] = Product.objects.get(title="One Extra Aquarium Slot").pk
         return context
 
 

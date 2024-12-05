@@ -1,0 +1,37 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Purchase: {{ object.title }}</title>
+{% else %}
+{% block title %}Purchase: {{ object.title }}{% endblock title %}
+{% endif %}
+
+
+{% block js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'checkout.js' %}" defer></script>
+{% endblock js %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
+{% endif %}
+
+    
+{% block content %}
+<h2 style="max-width: 600px; margin: auto;">Checkout</h2>
+<!-- Display a payment form -->
+<div id="checkout">
+<!-- Checkout will insert the payment form here -->
+</div>
+<input type="hidden" id="purchaseObject" value="{{ object.pk }}">
+{% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

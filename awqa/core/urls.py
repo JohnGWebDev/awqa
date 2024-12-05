@@ -13,4 +13,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/', include(('accounts.urls', 'accounts'))),
     path('tz_detect/', include('tz_detect.urls')),
+    path('payments/', include(('payments.urls', 'payments'))),
 ]

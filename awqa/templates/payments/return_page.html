@@ -1,0 +1,42 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load partials %}
+
+{% partialdef page-partial %}
+
+{% if request.htmx %}
+<title hx-swap-oob="innerHTML:title">AWQA| Purchase</title>
+{% else %}
+{% block title %}Purchase {% endblock title %}
+{% endif %}
+
+{% if request.htmx %}
+{% include "includes/messages.html" %}
+{% include "includes/breadcrumbs.html" %}
+{% endif %}
+
+    
+{% block content %}
+{% if payment_status == 'paid' %}
+<h2 style="max-width: 600px; margin: auto;">Payment Success!</h2>
+{% else %}
+<h2 style="max-width: 600px; margin: auto;">Payment Failed.</h2>
+{% endif %}
+<sl-card style="display: block; margin: auto; max-width: 600px;">
+    <p>Thank you for your payment!</p>
+    <p><strong>Email:</strong> {{ customer_email }}</p>
+    <p><strong>Payment Status:</strong> {{ payment_status }}</p>
+    <p><strong>Amount Paid:</strong> {{ amount_total }} {{ currency }}</p>
+    {% if payment_status == 'paid' %}
+        <p>Your payment was successful!</p>
+        <sl-button variant="success" slot="footer" hx-get="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">Add Aquarium<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
+    {% else %}
+        <p>Your payment was not completed. Please try again or contact support.</p>
+    {% endif %}
+</sl-card>
+{% endblock content %}
+
+{% endpartialdef %}
+
+{% partial page-partial %}

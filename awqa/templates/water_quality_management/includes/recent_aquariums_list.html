@@ -13,6 +13,10 @@
         </sl-alert>
     {% endif %}
     <br>
+    {% if user.can_create_aquarium %}
     <sl-button variant="success" hx-get="{% url 'water_quality_management:create-aquarium' %}" hx-target="#pageContainer" hx-push-url="true">Add Aquarium<sl-icon slot="suffix" name="plus-lg"></slot-icon></sl-button>
+    {% else %}
+    <sl-button variant="success" hx-get="{% url 'payments:checkout' product_1_pk %}"  hx-target="#pageContainer" hx-push-url="true" >Purchase Aquarium Space</sl-button>
+    {% endif %}
     <sl-button style="width: 100%;" variant="primary" slot="footer" hx-get="{% url 'water_quality_management:aquarium-list' user.pk %}" hx-target="#pageContainer" hx-push-url="true">View All</sl-button>
 </sl-card>

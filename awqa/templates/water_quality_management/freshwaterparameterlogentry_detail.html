@@ -18,19 +18,21 @@
 
 {% block content %}
 <div class="flexContainer">
-<h2 style="max-width: 600px; margin: auto;">{{ object.date_created }}</h2>
+<h2 style="max-width: 600px; margin: auto;">Water Quality Log Entry</h2>
 <sl-dropdown>
     <sl-icon-button name="gear" label="Settings" slot="trigger" style="font-size: 2em; margin-top: 20px; background-color: white; border-radius: 5px; border: 1px solid lightgrey;"></sl-icon-button>
     <sl-menu>
         <sl-menu-label>General</sl-menu-label>
-        <sl-menu-item hx-get="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Update Log Entry</sl-menu-item>
-        <sl-menu-item hx-get="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target=#pageContainer hx-push-url="true">Delete Entry</sl-menu-item>
+        <sl-menu-item hx-get="{% url 'water_quality_management:update-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Update Log Entry</sl-menu-item>
+        <sl-menu-item hx-get="{% url 'water_quality_management:delete-log-entry' object.pk %}" hx-target="#pageContainer" hx-push-url="true">Delete Entry</sl-menu-item>
     </sl-menu>
 </sl-dropdown>
 </div>
 <sl-card style="display:block;max-width:600px;margin:auto;">
-    <h3 slot="header">{{ object.aquarium.name }}</h3>
+    <h3 slot="header">{{ object.date_created }}</h3>
     <ul>
+        <li><b>Aquarium: </b>{{ object.aquarium.name }}</li>
+        <br>
         <li><b>pH: </b>{{ object.ph }}</li>
         <br>
         <li><b>High Range pH: </b>{{ object.high_range_ph }}</li>
@@ -52,6 +54,34 @@
             </li>
         {% endif %}
     </ul>
+</sl-card>
+<br>
+<sl-card style="display:block;max-width:600px;margin:auto;">
+    <h3 slot="header">Personalized AI Care Suggestions</h3>
+    {% if object.ai_suggestions %}
+        <div id="suggestionContainer">
+            <p style="text-indent: 25px;">{{ object.ai_suggestions }}</p>
+        </div>
+    {% else %}
+        <div id="suggestionContainer">
+            <sl-alert open variant="success">
+                <sl-icon slot="icon" name="pencil"></sl-icon>
+                <b><p>Have AI generate personalized care instructions based on the parameters you recorded in this log entry.</p></b>
+            </sl-alert>
+        </div>
+    {% endif %}
+    {% if object.openai_token_available %}
+    <sl-button-group slot="footer" x-data="{ isDisabled: false }">
+        <sl-button size="large" hx-get="{% url 'water_quality_management:ai-care-suggestion' object.pk %}" hx-target="#suggestionContainer" variant="success" x-bind:disabled="isDisabled" @click="isDisabled = !isDisabled">
+            <sl-icon slot="prefix" name="pencil" ></sl-icon>
+            Generate
+        </sl-button>
+    </sl-button-group>
+    {% else %}
+    <div slot="footer">
+        <p><b>Date Generated: </b>{{ object.date_ai_suggestion_created }}</p>
+    </div>
+    {% endif %}
 </sl-card>
 {% endblock content %}
 

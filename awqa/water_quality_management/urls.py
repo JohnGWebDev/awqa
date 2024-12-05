@@ -19,4 +19,5 @@ urlpatterns = [
     path('accounts/<int:pk>/log-entry/list/', views.WaterQualityLogEntryListView.as_view(), name='log-entry-list'),
 
     path('chart-factory/<int:pk>/<int:days>/', utilities.ChartFactory.as_view(), name="render-chart"),
+    path('care-suggestions/<int:pk>/', utilities.OpenAITankCareSuggestionsFactory.as_view(), name="ai-care-suggestion"),
 ]
