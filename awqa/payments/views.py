@@ -26,6 +26,7 @@ class CreateCheckoutSessionView(View):
             price_id = product.price.price_id
             session = stripe.checkout.Session.create(
                 ui_mode='embedded',
+                customer_email=request.user.email,
                 line_items=[
                     {
                         'price': price_id,
