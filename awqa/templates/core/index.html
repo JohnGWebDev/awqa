@@ -62,34 +62,73 @@
 </script>
 {% endblock js %}
 {% block content %}
-<section style="text-align: center;">
+<section style="text-align: center; max-width: 700px; margin: auto;">
     <h2>Aquarium Water Quality Analytics</h2>
     <sl-card>Test your water, log the results, and analyze trends to maintain a thriving ecosystem.</sl-card>
 </section>
 <br>
-<h2 style="max-width: 600px; margin: auto;">Key Features</h3>
+<h3 style="max-width: 600px; margin: auto;">Key Features</h3>
 <sl-card style="display: block; max-width: 600px;margin: auto;">
-    <h4>Multi-Aquarium Management</h4>
-    <hr>
-    <p class="basic-border">Easily track and manage water quality for all<sup>1</sup> your aquariums in one place. Each tank has its own logbook, allowing you to stay organized.<br><br><sup>1</sup><b><sub>(Users can currently manage up to three aquariums. Options to add more tanks coming soon!)</sub></b></p>
+    <h4 slot="header">Visualize Your Data</h4>
+    <img src="{% static 'core/chart.webp' %}" style="max-width: 100%;"/>
+    <p slot="footer" style="text-indent: 25px;">Turn your log entries into interactive charts to visualize water quality trends over time. Spot issues early and adjust your care routine accordingly.</p>
 </sl-card>
 <br>
 <sl-card style="display: block; max-width: 600px;margin: auto;">
-    <h4>Water Quality Logs</h4>
-    <hr>
-    <p class="basic-border">After testing your aquarium water, quickly log key parameters like pH, ammonia, nitrite, nitrate, etc for each tank.</p>
+    <h4 slot="header">Personalized AI Care Suggestions</h4>
+    <sl-alert open variant="success">
+        <sl-icon slot="icon" name="pencil"></sl-icon>
+        <b><p>Have AI generate personalized care instructions based on the parameters you record in your log entries!</p></b>
+    </sl-alert>
+    <sl-button variant="success" slot="footer" size="large" href="{% url 'account_signup' %}" hx-boost="true" hx-swap="show:unset" hx-target="#pageContainer"><sl-icon slot="prefix" name="pencil" ></sl-icon>Get Started</sl-button>
 </sl-card>
 <br>
 <sl-card style="display: block; max-width: 600px;margin: auto;">
-    <h4>Visualize Your Data</h4>
-    <hr>
-    <p class="basic-border">Turn your log entries into interactive charts to visualize water quality trends over time. Spot issues early and adjust your care routine accordingly.</p>
+    <h4 slot="header">Cloud Based Storage</h4>
+    
+    <p style="text-indent:25px;">Access your aquarium data anytime, anywhere. Our secure cloud-based storage ensures your water quality logs, history, and insights are always backed up and synced across all your devices. Stay connected to your aquariums, whether you're at home or on the go!</p>
 </sl-card>
 <br>
 <sl-card style="display: block; max-width: 600px;margin: auto;">
-    <h4>Comprehensive History</h4>
-    <hr>
-    <p class="basic-border">Access and review all past log entries with a simple and intuitive user interface. View entries by date to track changes and keep detailed records.</p>
+    <h4 slot="header">Multi-Aquarium Management</h4>
+    <img src="{% static 'core/recent_aquariums.webp' %}" style="display: block; max-width: 400px; width: 100%; margin: auto;"/>
+    <p slot="footer" style="text-indent:25px;">Manage water quality for all your aquariums in one convenient place. Each tank gets its own dedicated logbook to help you stay organized. Start with up to three aquariums for free, with the option to add more as your collection grows!</p>
+</sl-card>
+<br>
+<sl-card style="display: block; max-width: 600px;margin: auto;">
+    <h4 slot="header">Features under Development</h4>
+    <p>We're excited to share the upcoming tools we have under development, suggested by the community:</p>
+    <ul style="list-style-type: disc;">
+    <li>
+        <b>Log Entry Archival</b><br>
+        Easily organize and archive older log entries while keeping your current data front and center. Access historical logs whenever you need them.
+    </li>
+    <br>
+    <li>
+        <b>Tank Event Tracking</b><br>
+        Stay on top of every detail with the ability to log events like adding livestock, planting new flora, feedings, water changes, and more.
+    </li>
+    <br>
+    <li>
+        <b>Expense Tracking</b><br>
+        Keep an eye on your aquarium budget. Record and categorize expenses for livestock, equipment, maintenance, and supplies in one place.
+    </li>
+    <br>
+    <li>
+        <b>Livestock Management</b><br>
+        Track detailed information about your fish and invertebrates, including species, health, lifespan, and compatibility data.
+    </li>
+    <br>
+    <li>
+        <b>Plant Management</b><br>
+        Manage your aquatic plants with ease. Monitor their growth, maintenance needs, and compatibility with your tank's environment.
+    </li>
+    <br>
+    <li>
+        <b>Alerts & Reminders</b><br>
+        Never miss a critical task again. Set custom alerts for feedings, water changes, equipment maintenance, and more.
+    </li>
+    </ul>
 </sl-card>
 <br>
 <sl-card style="display: block; max-width: 600px;margin: auto;">

@@ -24,7 +24,7 @@ class ChartFactory(View):
     def get(self, request, **kwargs):
 
         # Get query parameters with default values
-        query = kwargs.get('days', 30)
+        query = kwargs.get('days', 15)
         pk = kwargs.get('pk')
 
         start_date = now() - timedelta(days=int(query))
