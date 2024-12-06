@@ -13,7 +13,7 @@ stripe.api_key = secret_key
 
 User = settings.AUTH_USER_MODEL
 
-YOUR_DOMAIN = 'http://localhost:8000'
+YOUR_DOMAIN = 'https://www.awqanalytics.com'
 
 class CheckoutView(DetailView):
     model = Product
